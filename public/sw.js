@@ -1,5 +1,5 @@
-const CACHE_NAME = 'champion-shell-v1'
-const APP_ROOT = new URL('/', self.location.origin).href
+const CACHE_NAME = 'champion-shell-v2'
+const APP_ROOT = new URL('./', self.location.href).href
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.add(APP_ROOT)))
