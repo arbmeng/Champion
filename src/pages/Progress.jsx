@@ -273,7 +273,7 @@ function Body({ state }) {
           <Card pad={false}>
             <table className="rtable">
               <thead><tr><th>{tr("Date")}</th>{BODY_METRICS.map((b) => <th key={b.id}>{b.label}</th>)}</tr></thead>
-              <tbody>{state.body.slice(0, 8).map((b) => <tr key={b.date}><td data-label="Date">{shortDate(b.date)}</td>{BODY_METRICS.map((mm) => <td key={mm.id} data-label={mm.label} className="num">{b[mm.id] ?? '—'}</td>)}</tr>)}</tbody>
+              <tbody>{state.body.slice(0, 8).map((b) => <tr key={b.date}><td data-label={tr("Date")}>{shortDate(b.date)}</td>{BODY_METRICS.map((mm) => <td key={mm.id} data-label={mm.label} className="num">{b[mm.id] ?? '—'}</td>)}</tr>)}</tbody>
             </table>
           </Card>
         </>

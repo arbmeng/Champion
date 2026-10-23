@@ -318,3 +318,51 @@ h3 { font-size: .9375rem; font-weight: 600; letter-spacing: 0; }
 .ccard-title h3 { font-size: 1.1875rem; }
 .ccard-title p { font-size: .75rem; }
 .feat-cover { min-height: 220px; }
+
+/* ===== Kurdish typography: Vazirmatn throughout (modern, full Sorani coverage, matching Latin digits) ===== */
+:lang(ckb) { --font: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif; --font-display: 'Vazirmatn', system-ui, sans-serif; --font-sans: 'Vazirmatn', system-ui, sans-serif; }
+:lang(ckb) body { font-family: var(--font); line-height: 1.65; font-weight: 450; }
+:lang(ckb) h1, :lang(ckb) h2, :lang(ckb) h3, :lang(ckb) .display, :lang(ckb) .num, :lang(ckb) .hero-title, :lang(ckb) .wcard-title, :lang(ckb) .course-title, :lang(ckb) .feat-title, :lang(ckb) .insight-text, :lang(ckb) .session-title, :lang(ckb) .session-ex-name, :lang(ckb) .wrow-title, :lang(ckb) .ccard-title h3, :lang(ckb) .logo-word, :lang(ckb) .section-title, :lang(ckb) .empty h3 { font-family: var(--font-display); }
+:lang(ckb) h1 { font-size: 1.5rem; line-height: 1.4; font-weight: 800; }
+:lang(ckb) h2 { font-size: 1.125rem; line-height: 1.45; font-weight: 700; }
+:lang(ckb) h3 { font-size: .9375rem; line-height: 1.5; font-weight: 700; }
+:lang(ckb) .hero-title { font-size: 1.4rem; line-height: 1.5; font-weight: 800; }
+:lang(ckb) .wcard-title { font-size: 1.05rem; line-height: 1.5; font-weight: 700; }
+:lang(ckb) .insight-text { font-size: .9375rem; line-height: 1.75; font-weight: 600; }
+:lang(ckb) .session-ex-name { font-size: 1.35rem; line-height: 1.5; font-weight: 800; }
+:lang(ckb) .num { font-weight: 700; font-variant-numeric: tabular-nums; }
+:lang(ckb) .num-xl { font-size: 2rem; } :lang(ckb) .num-lg { font-size: 1.5rem; } :lang(ckb) .num-md { font-size: 1.0625rem; }
+:lang(ckb) .metric-value { font-size: 1.625rem; }
+:lang(ckb) .caption, :lang(ckb) .label { line-height: 1.6; }
+:lang(ckb) .btn { font-weight: 700; }
+:lang(ckb) .tab, :lang(ckb) .seg-item, :lang(ckb) .chip { font-weight: 600; }
+:lang(ckb) .eyebrow { font-weight: 600; }
+
+
+/* ===== Final polish ===== */
+/* tabs: full-bleed scrolling pill row, aligned to the page gutter */
+.tabs { background: none; padding: 0 var(--page-pad); margin-inline: calc(var(--page-pad) * -1); width: auto; max-width: none; border-radius: 0; gap: 8px; scroll-padding-inline: var(--page-pad); }
+.tab { flex: none; padding: 7px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); font-size: .75rem; }
+.tab.is-active { background: var(--text); border-color: var(--text); color: var(--bg); box-shadow: none; }
+.tab:hover { color: var(--text); }
+.tab.is-active:hover { color: var(--bg); }
+.tab-count { background: rgba(127, 127, 127, .18); }
+@media (min-width: 760px) { .tabs { padding-inline: 0; margin-inline: 0; flex-wrap: wrap; overflow: visible; } }
+
+/* history / exercise tables on phones: label above value, one row per record */
+@media (max-width: 639px) {
+  .rtable.compact tr { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px 8px; }
+  .rtable.compact td { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .rtable td::before { font-size: .625rem; }
+}
+.rtable td { font-size: .8125rem; }
+
+/* builder action bar */
+.builder-bar { gap: 10px; padding: 10px; }
+.builder-bar .btn { flex: 1; min-height: 46px; padding: 6px 12px; font-size: .8125rem; line-height: 1.3; }
+.builder-bar .btn-primary { flex: 1.35; }
+
+/* tighter list rows, crisper header cluster */
+.erow { min-height: 56px; padding: 6px 2px; }
+.page-identity .icon-btn svg { width: 18px; height: 18px; }
+.page-identity .icon-btn { width: 36px; height: 36px; }
