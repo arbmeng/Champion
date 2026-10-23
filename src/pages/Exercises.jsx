@@ -177,12 +177,12 @@ export function ExerciseDetail() {
                   const rir = Math.round((h.sets.reduce((n, s) => n + (s.rir ?? 0), 0) / h.sets.length) * 10) / 10
                   return (
                     <tr key={h.logId}>
-                      <td data-label="Date"><Link className="link" to={`/history/${h.logId}`}>{shortDate(h.date)}</Link></td>
-                      <td data-label="Weight" className="num">{timeBased ? '—' : `${toDisplay(top.weight, unit)} ${unit}`}</td>
-                      <td data-label="Reps" className="num">{h.sets.map((s) => s.reps).join(', ')}</td>
-                      <td data-label="Sets" className="num">{h.sets.length}</td>
-                      <td data-label="RIR" className="num">{rir}</td>
-                      <td data-label="Volume" className="num">{vol ? `${fmtNum(toDisplay(vol, unit))} ${unit}` : '—'}</td>
+                      <td data-label={tr("Date")}><Link className="link" to={`/history/${h.logId}`}>{shortDate(h.date)}</Link></td>
+                      <td data-label={tr("Weight")} className="num">{timeBased ? '—' : `${toDisplay(top.weight, unit)} ${unit}`}</td>
+                      <td data-label={tr("Reps")} className="num">{h.sets.map((s) => s.reps).join(', ')}</td>
+                      <td data-label={tr("Sets")} className="num">{h.sets.length}</td>
+                      <td data-label={tr("RIR")} className="num">{rir}</td>
+                      <td data-label={tr("Volume")} className="num">{vol ? `${fmtNum(toDisplay(vol, unit))} ${unit}` : '—'}</td>
                     </tr>
                   )
                 })}

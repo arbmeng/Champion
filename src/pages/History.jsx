@@ -116,7 +116,7 @@ export function HistoryDetail() {
               <div className="row between"><Link to={`/exercises/${ex.id}`} className="link entry-title">{ex.name}</Link>{pr && <Badge tone="accent" icon={Trophy}>{tr("PR")}</Badge>}</div>
               <table className="rtable compact">
                 <thead><tr><th>{tr("Set")}</th>{showW && <th>{tr("Weight")}</th>}<th>{ex.repLabel === 'reps' ? tr("Reps") : tr(ex.repLabel)}</th><th>{tr("RIR")}</th>{showW && <th>{tr("Volume")}</th>}</tr></thead>
-                <tbody>{e.sets.map((s, i) => <tr key={i}><td data-label="Set" className="num">{i + 1}</td>{showW && <td data-label="Weight" className="num">{toDisplay(s.weight, unit)} {unit}</td>}<td data-label="Reps" className="num">{s.reps}</td><td data-label="RIR" className="num">{ex.repLabel === 'reps' ? s.rir : '—'}</td>{showW && <td data-label="Volume" className="num">{fmtNum(toDisplay(setVolume(ex, s), unit))}</td>}</tr>)}</tbody>
+                <tbody>{e.sets.map((s, i) => <tr key={i}><td data-label={tr("Set")} className="num">{i + 1}</td>{showW && <td data-label={tr("Weight")} className="num">{toDisplay(s.weight, unit)} {unit}</td>}<td data-label={tr("Reps")} className="num">{s.reps}</td><td data-label={tr("RIR")} className="num">{ex.repLabel === 'reps' ? s.rir : '—'}</td>{showW && <td data-label={tr("Volume")} className="num">{fmtNum(toDisplay(setVolume(ex, s), unit))}</td>}</tr>)}</tbody>
               </table>
             </Card>
           )
