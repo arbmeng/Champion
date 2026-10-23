@@ -151,7 +151,8 @@ export function Session() {
   const prevText = (s) => (s.prev ? `${showWeight ? `${toDisplay(s.prev.weight, unit)} ${unit} × ` : ''}${s.prev.reps}` : null)
 
   return (
-    <div className="session">
+    <div className="session-page">
+      <div className="session-sticky">
       <header className="session-top">
         <IconButton label={tr("Leave session view (workout keeps running)")} icon={ChevronLeft} onClick={() => navigate('/today')} />
         <div className="grow session-top-center"><span className="session-timer-pill"><span className="eyebrow">{tr("Session time")}</span><b className="num">{fmtClock((now - a.startedAt) / 1000)}</b></span></div>
@@ -159,16 +160,17 @@ export function Session() {
         <Button variant="primary" size="sm" onClick={() => setFinish(true)}>{tr("Finish")}</Button>
       </header>
       <ProgressBar value={(doneSets / totalSets) * 100} height={3} label={tr("Workout progress")} className="session-progress" />
+      <div className="session-nav">
+        <IconButton size="sm" label={tr("Previous exercise")} icon={ChevronLeft} onClick={() => go(-1)} disabled={cur === 0} />
+        <div className="session-nav-mid"><span className="eyebrow">{tr("Exercise {0} of {1}", cur + 1, a.exercises.length)}</span><h1 className="truncate">{ex.name}</h1></div>
+        <IconButton size="sm" label={tr("Next exercise")} icon={ChevronRight} onClick={() => go(1)} disabled={cur === a.exercises.length - 1} />
+      </div>
+      </div>
 
       <div className="session-body">
         <div className="session-main" onTouchStart={(e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }} onTouchEnd={onTouchEnd}>
           <div className="session-ex">
-            <div className="row between">
-              <span className="eyebrow">{tr("Exercise {0} of {1}", cur + 1, a.exercises.length)}</span>
-              <div className="row gap-1"><IconButton size="sm" label={tr("Previous exercise")} icon={ChevronLeft} onClick={() => go(-1)} disabled={cur === 0} /><IconButton size="sm" label={tr("Next exercise")} icon={ChevronRight} onClick={() => go(1)} disabled={cur === a.exercises.length - 1} /></div>
-            </div>
             <div className="session-ex-head">
-              <h1 className="session-ex-name">{ex.name}</h1>
               <div className="row gap-2 wrap center-row">
                 {set && <span className="set-chip">{tr("Set {0} of {1}", activeSet + 1, item.sets.length)}</span>}
                 <Badge tone="accent">{tr(ex.muscle)}</Badge>
