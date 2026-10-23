@@ -51,7 +51,7 @@ const courseRows = [
 
 export const courses = courseRows.map((c) => ({
   ...c, title: tr(c.title), tagline: tr(c.tagline), description: tr(c.description),
-  trainer: { ...c.trainer, role: tr(c.trainer.role), bio: tr(c.trainer.bio) },
+  trainer: { ...c.trainer, name: tr(c.trainer.name), role: tr(c.trainer.role), bio: tr(c.trainer.bio) },
   outcomes: c.outcomes.map(tr), tags: c.tags.map(tr),
 }))
 

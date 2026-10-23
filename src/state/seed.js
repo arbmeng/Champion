@@ -16,7 +16,7 @@ export const emptyState = () => ({
   onboarded: false,
   todayPick: null,
   remote: { version: 0, updated: null, lastSync: null, workouts: [], feed: [], notified: [] },
-  user: { name: 'Arez', level: 'Intermediate', goal: 'Build muscle', frequency: 4, equipment: 'Full gym', preferred: 'Hypertrophy', since: dateKey(addDays(new Date(), -120)) },
+  user: { name: tr('Arez'), level: 'Intermediate', goal: 'Build muscle', frequency: 4, equipment: 'Full gym', preferred: 'Hypertrophy', since: dateKey(addDays(new Date(), -120)) },
   settings: { ...defaultSettings },
   enrolled: [], activeCourse: null,
   history: [], active: null,

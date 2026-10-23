@@ -1,4 +1,6 @@
-export const workoutsTabs = [{ to: '/workouts', label: 'Workouts', end: true }, { to: '/courses', label: 'Courses' }, { to: '/exercises', label: 'Exercises' }]
-export const progressTabs = [{ to: '/progress', label: 'Progress', end: true }, { to: '/history', label: 'History' }, { to: '/goals', label: 'Goals' }]
-export const communityTabs = [{ to: '/community', label: 'Community', end: true }, { to: '/challenges', label: 'Challenges' }]
-export const profileTabs = [{ to: '/profile', label: 'Profile', end: true }, { to: '/nutrition', label: 'Nutrition' }, { to: '/recovery', label: 'Recovery' }, { to: '/coach', label: 'AI Coach' }, { to: '/settings', label: 'Settings' }]
+import { tr } from '../lib/i18n'
+
+export const workoutsTabs = [{ to: '/workouts', label: tr('Workouts'), end: true }, { to: '/courses', label: tr('Courses') }, { to: '/exercises', label: tr('Exercises') }]
+export const progressTabs = [{ to: '/progress', label: tr('Progress'), end: true }, { to: '/history', label: tr('History') }, { to: '/goals', label: tr('Goals') }]
+export const communityTabs = [{ to: '/community', label: tr('Community'), end: true }, { to: '/challenges', label: tr('Challenges') }]
+export const profileTabs = [{ to: '/profile', label: tr('Profile'), end: true }, { to: '/nutrition', label: tr('Nutrition') }, { to: '/recovery', label: tr('Recovery') }, { to: '/coach', label: tr('AI Coach') }, { to: '/settings', label: tr('Settings') }]

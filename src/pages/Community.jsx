@@ -9,6 +9,7 @@ import { communityTabs } from '../ui/sections'
 import { timeAgo } from '../lib/dates'
 import { L } from '../lib/i18n'
 import { fmtNum, toDisplay } from '../lib/format'
+import { tr } from '../lib/i18n'
 
 function Post({ post }) {
   const { state, actions } = useApp()
@@ -28,21 +29,21 @@ function Post({ post }) {
         <Badge>{post.workout}</Badge>
       </div>
       <div className="grid-3 post-stats">
-        <div><span className="eyebrow">Duration</span><div className="num num-md">{post.duration}<span className="unit">min</span></div></div>
-        <div><span className="eyebrow">Volume</span><div className="num num-md">{post.volume ? fmtNum(toDisplay(post.volume, unit)) : '—'}<span className="unit">{post.volume ? unit : ''}</span></div></div>
-        <div><span className="eyebrow">Exercises</span><div className="num num-md">{post.exercises}</div></div>
+        <div><span className="eyebrow">{tr("Duration")}</span><div className="num num-md">{post.duration}<span className="unit">{tr("min")}</span></div></div>
+        <div><span className="eyebrow">{tr("Volume")}</span><div className="num num-md">{post.volume ? fmtNum(toDisplay(post.volume, unit)) : '—'}<span className="unit">{post.volume ? unit : ''}</span></div></div>
+        <div><span className="eyebrow">{tr("Exercises")}</span><div className="num num-md">{post.exercises}</div></div>
       </div>
-      {post.pr && <div className="post-pr"><Trophy size={15} aria-hidden="true" /> <b>PR</b> {post.pr}</div>}
+      {post.pr && <div className="post-pr"><Trophy size={15} aria-hidden="true" /> <b>{tr("PR")}</b> {post.pr}</div>}
       {post.text && <p>{post.text}</p>}
       <div className="row gap-2 post-actions">
         <Button size="sm" variant="ghost" icon={Heart} aria-pressed={liked} className={cx(liked && 'is-on')} onClick={() => actions.like(post.id)}>{post.likes + (liked ? 1 : 0)}</Button>
         <Button size="sm" variant="ghost" icon={MessageCircle} aria-expanded={open} onClick={() => setOpen(!open)}>{comments.length}</Button>
-        <Button size="sm" variant="ghost" icon={PartyPopper} aria-pressed={cheered} className={cx(cheered && 'is-on')} onClick={() => actions.like(`${post.id}:c`)}>Celebrate</Button>
+        <Button size="sm" variant="ghost" icon={PartyPopper} aria-pressed={cheered} className={cx(cheered && 'is-on')} onClick={() => actions.like(`${post.id}:c`)}>{tr("Celebrate")}</Button>
       </div>
       {open && (
         <div className="stack-sm comments">
           {comments.map((c, i) => { const a = c.authorId === 'you' ? { name: state.user.name } : friends.find((f) => f.id === c.authorId); return <div key={c.id || i} className="row-top gap-2"><Avatar name={a?.name || '?'} hue={a?.hue ?? 18} size={26} /><p><b>{a?.name?.split(' ')[0]}</b> {c.text}</p></div> })}
-          <form className="row gap-2" onSubmit={submit}><input className="input" aria-label="Write a comment" placeholder="Add a comment" value={text} onChange={(e) => setText(e.target.value)} /><Button type="submit" variant="primary" icon={Send} aria-label="Send comment" /></form>
+          <form className="row gap-2" onSubmit={submit}><input className="input" aria-label={tr("Write a comment")} placeholder={tr("Add a comment")} value={text} onChange={(e) => setText(e.target.value)} /><Button type="submit" variant="primary" icon={Send} aria-label={tr("Send comment")} /></form>
         </div>
       )}
     </Card>
@@ -62,28 +63,28 @@ export function Community() {
   const fmt = { workouts: (v) => `${v} workouts`, volume: (v) => `${fmtNum(toDisplay(v, unit))} ${unit}`, streak: (v) => `${v} days`, prs: (v) => `${v} PRs` }[cat]
   return (
     <div className="stack-lg">
-      <PageHeader eyebrow="Training together" title="Community" subtitle="Fitness activity first. Celebrate each other’s work." />
+      <PageHeader eyebrow={tr("Training together")} title={tr("Community")} subtitle={tr("Fitness activity first. Celebrate each other’s work.")} />
       <SectionTabs items={communityTabs} />
-      <Tabs label="Community" value={tab} onChange={setTab} items={[{ id: 'feed', label: 'Feed' }, { id: 'friends', label: 'Friends' }, { id: 'groups', label: 'Groups' }, { id: 'leaderboards', label: 'Leaderboards' }]} />
-      {tab === 'feed' && (feed.length ? <div className="feed">{feed.map((p) => <Post key={p.id} post={p} />)}</div> : <EmptyState icon={Users} title="No community activity" body="Follow friends or finish a workout and share it to start your feed." action={<Button variant="primary" onClick={() => setTab('friends')}>Find friends</Button>} />)}
+      <Tabs label={tr("Community")} value={tab} onChange={setTab} items={[{ id: 'feed', label: tr("Feed") }, { id: 'friends', label: tr("Friends") }, { id: 'groups', label: tr("Groups") }, { id: 'leaderboards', label: tr("Leaderboards") }]} />
+      {tab === 'feed' && (feed.length ? <div className="feed">{feed.map((p) => <Post key={p.id} post={p} />)}</div> : <EmptyState icon={Users} title={tr("No community activity")} body={tr("Follow friends or finish a workout and share it to start your feed.")} action={<Button variant="primary" onClick={() => setTab('friends')}>{tr("Find friends")}</Button>} />)}
       {tab === 'friends' && (
         <div className="grid-auto">
           {friends.map((f) => { const on = Boolean(state.social.following[f.id]); return (
-            <Card key={f.id} className="row gap-3"><Avatar name={f.name} hue={f.hue} size={46} /><div className="grow"><b>{f.name}</b><div className="caption">{f.handle} · {f.level}</div><div className="caption row gap-1"><Flame size={12} aria-hidden="true" /> {f.streak} day streak</div></div><Button size="sm" variant={on ? 'secondary' : 'primary'} icon={on ? undefined : Plus} aria-pressed={on} onClick={() => actions.follow(f.id)}>{on ? 'Following' : 'Follow'}</Button></Card>
+            <Card key={f.id} className="row gap-3"><Avatar name={f.name} hue={f.hue} size={46} /><div className="grow"><b>{f.name}</b><div className="caption">{f.handle} · {tr(f.level)}</div><div className="caption row gap-1"><Flame size={12} aria-hidden="true" /> {f.streak} {tr("day streak")}</div></div><Button size="sm" variant={on ? 'secondary' : 'primary'} icon={on ? undefined : Plus} aria-pressed={on} onClick={() => actions.follow(f.id)}>{on ? tr("Following") : tr("Follow")}</Button></Card>
           ) })}
         </div>
       )}
       {tab === 'groups' && (
         <div className="grid-auto">
           {groups.map((g) => { const on = Boolean(state.social.groups[g.id]); return (
-            <Card key={g.id} className="stack-sm"><div className="row gap-3"><span className="group-mark" style={{ background: `hsl(${g.hue} 55% 38%)` }} aria-hidden="true"><Users size={18} /></span><div className="grow"><b>{g.name}</b><div className="caption">{fmtNum(g.members + (on ? 1 : 0))} members</div></div></div><p className="muted">{g.description}</p><Button variant={on ? 'secondary' : 'primary'} aria-pressed={on} onClick={() => actions.toggleGroup(g.id)}>{on ? 'Joined' : 'Join group'}</Button></Card>
+            <Card key={g.id} className="stack-sm"><div className="row gap-3"><span className="group-mark" style={{ background: `hsl(${g.hue} 55% 38%)` }} aria-hidden="true"><Users size={18} /></span><div className="grow"><b>{g.name}</b><div className="caption">{fmtNum(g.members + (on ? 1 : 0))} {tr("members")}</div></div></div><p className="muted">{g.description}</p><Button variant={on ? 'secondary' : 'primary'} aria-pressed={on} onClick={() => actions.toggleGroup(g.id)}>{on ? tr("Joined") : tr("Join group")}</Button></Card>
           ) })}
         </div>
       )}
       {tab === 'leaderboards' && (
         <div className="stack">
-          <div className="row between wrap gap-4"><SegmentedControl label="Category" items={[{ id: 'workouts', label: 'Workouts' }, { id: 'volume', label: 'Volume' }, { id: 'streak', label: 'Streak' }, { id: 'prs', label: 'PRs' }]} value={cat} onChange={setCat} /><SegmentedControl size="sm" label="Scope" items={[{ id: 'friends', label: 'Friends' }, { id: 'everyone', label: 'Everyone' }]} value={scope} onChange={setScope} /></div>
-          <Card className="stack-sm"><ol className="stack-sm">{rows.map((r) => <LeaderboardRow key={r.id} row={r} format={fmt} />)}</ol><p className="caption">Weekly workouts and volume reset every Monday. Streaks and PRs are personal bests — compare, don’t compete.</p></Card>
+          <div className="row between wrap gap-4"><SegmentedControl label={tr("Category")} items={[{ id: 'workouts', label: tr("Workouts") }, { id: 'volume', label: tr("Volume") }, { id: 'streak', label: tr("Streak") }, { id: 'prs', label: tr("PRs") }]} value={cat} onChange={setCat} /><SegmentedControl size="sm" label={tr("Scope")} items={[{ id: 'friends', label: tr("Friends") }, { id: 'everyone', label: tr("Everyone") }]} value={scope} onChange={setScope} /></div>
+          <Card className="stack-sm"><ol className="stack-sm">{rows.map((r) => <LeaderboardRow key={r.id} row={r} format={fmt} />)}</ol><p className="caption">{tr("Weekly workouts and volume reset every Monday. Streaks and PRs are personal bests — compare, don’t compete.")}</p></Card>
         </div>
       )}
     </div>

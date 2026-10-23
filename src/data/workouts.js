@@ -63,7 +63,7 @@ export function makeWorkout([id, title, description, categories, goal, level, pl
   return { id, title, description, categories, goal, level, place, trainer, minutes, exercises: list, muscles, equipment, calories: Math.round(minutes * rate), hue: hueFor(id), ...extra }
 }
 
-export const workouts = rows.map((r) => makeWorkout([r[0], tr(r[1]), tr(r[2]), ...r.slice(3)]))
+export const workouts = rows.map((r) => makeWorkout([r[0], tr(r[1]), tr(r[2]), r[3], r[4], r[5], r[6], r[7], r[8], r[9]], { trainerName: tr(r[7]) }))
 
 function hueFor(id) {
   let h = 0

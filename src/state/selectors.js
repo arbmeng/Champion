@@ -5,7 +5,7 @@ import { courseMap, DAY_PATTERNS, totalSessions, sessionWorkoutId, sessionWeek }
 import { getWorkout, makeWorkout, workouts as libraryWorkouts } from '../data/workouts'
 import { L, tr } from '../lib/i18n'
 import { friends } from '../data/social'
-import { addDaysKey, dateKey, daysBetween, parseKey, weekKeys } from '../lib/dates'
+import { addDaysKey, dateKey, daysBetween, monthShort, parseKey, weekKeys } from '../lib/dates'
 import { clamp, e1rm, pct } from '../lib/format'
 
 export const UPPER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps']
@@ -108,7 +108,7 @@ export function volumeBuckets(state, mode = 'week', count = 8) {
       const from = dateKey(d)
       const to = dateKey(new Date(d.getFullYear(), d.getMonth() + 1, 0))
       const s = sumLogs(logsBetween(state, from, to))
-      out.push({ label: d.toLocaleDateString('en-US', { month: 'short' }), key: from, volume: Math.round(s.volume), workouts: s.workouts, sets: s.sets })
+      out.push({ label: monthShort(d), key: from, volume: Math.round(s.volume), workouts: s.workouts, sets: s.sets })
     }
   }
   return out
@@ -265,16 +265,16 @@ export function achievementList(state) {
   const courseDone = Object.keys(courseMap).filter((id) => courseProgress(state, id).finished).length
   const recentPr = state.history.filter((l) => l.date >= addDaysKey(today(), -7)).reduce((n, l) => n + l.prs.length, 0)
   return [
-    { id: 'first-pr', title: 'First PR', description: 'Set your first personal record.', icon: 'trophy', value: tot.prs, target: 1 },
-    { id: 'w10', title: '10 Workouts', description: 'Complete 10 workouts.', icon: 'dumbbell', value: tot.workouts, target: 10 },
-    { id: 'w50', title: '50 Workouts', description: 'Complete 50 workouts.', icon: 'dumbbell', value: tot.workouts, target: 50 },
-    { id: 'w100', title: '100 Workouts', description: 'Complete 100 workouts.', icon: 'dumbbell', value: tot.workouts, target: 100 },
-    { id: 'v100k', title: '100K Volume', description: 'Lift 100,000 kg in total.', icon: 'weight', value: Math.round(tot.volume), target: 100000 },
-    { id: 'streak30', title: '30 Day Streak', description: 'Stay on plan for 30 days.', icon: 'flame', value: streak, target: 30 },
-    { id: 'course', title: 'Course Complete', description: 'Finish every session in a course.', icon: 'medal', value: courseDone, target: 1 },
-    { id: 'consistency', title: 'Consistency Master', description: 'Hit your weekly target 4 weeks in a row.', icon: 'calendar', value: weekStreak, target: 4 },
-    { id: 'best', title: 'Personal Best', description: 'Set a PR in the last 7 days.', icon: 'sparkles', value: recentPr, target: 1 },
-    { id: 'week', title: 'Perfect Week', description: 'Hit your weekly target this week.', icon: 'check', value: week.workouts, target: state.settings.weeklyTarget },
+    { id: 'first-pr', title: tr("First PR"), description: tr("Set your first personal record."), icon: 'trophy', value: tot.prs, target: 1 },
+    { id: 'w10', title: tr("10 Workouts"), description: tr("Complete 10 workouts."), icon: 'dumbbell', value: tot.workouts, target: 10 },
+    { id: 'w50', title: tr("50 Workouts"), description: tr("Complete 50 workouts."), icon: 'dumbbell', value: tot.workouts, target: 50 },
+    { id: 'w100', title: tr("100 Workouts"), description: tr("Complete 100 workouts."), icon: 'dumbbell', value: tot.workouts, target: 100 },
+    { id: 'v100k', title: tr("100K Volume"), description: tr("Lift 100,000 kg in total."), icon: 'weight', value: Math.round(tot.volume), target: 100000 },
+    { id: 'streak30', title: tr("30 Day Streak"), description: tr("Stay on plan for 30 days."), icon: 'flame', value: streak, target: 30 },
+    { id: 'course', title: tr("Course Complete"), description: tr("Finish every session in a course."), icon: 'medal', value: courseDone, target: 1 },
+    { id: 'consistency', title: tr("Consistency Master"), description: tr("Hit your weekly target 4 weeks in a row."), icon: 'calendar', value: weekStreak, target: 4 },
+    { id: 'best', title: tr("Personal Best"), description: tr("Set a PR in the last 7 days."), icon: 'sparkles', value: recentPr, target: 1 },
+    { id: 'week', title: tr("Perfect Week"), description: tr("Hit your weekly target this week."), icon: 'check', value: week.workouts, target: state.settings.weeklyTarget },
   ].map((a) => ({ ...a, unlocked: a.value >= a.target, unlockedAt: state.unlocked[a.id] || null }))
 }
 
@@ -335,7 +335,7 @@ export function challengeValue(state, ch) {
 }
 export function challengeBoard(state, ch) {
   const mine = challengeValue(state, ch)
-  const rows = ch.board.filter(([n]) => n !== 'Arez').map(([name, value]) => ({ name, value }))
+  const rows = ch.board.filter(([n]) => n !== 'Arez').map(([name, value]) => ({ name: tr(name), value }))
   rows.push({ name: state.user.name, value: mine, you: true })
   return rows.sort((a, b) => b.value - a.value).map((r, i) => ({ ...r, rank: i + 1 }))
 }

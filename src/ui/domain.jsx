@@ -2,13 +2,14 @@ import { Link } from 'react-router-dom'
 import { Award, Bookmark, Calendar, Check, ChevronRight, Clock, Dumbbell, Flame, Heart, Lock, Medal, Sparkles, Star, Trophy, Weight, Sparkle } from 'lucide-react'
 import { Badge, Avatar, Card, ProgressBar, cx } from './primitives'
 import { Cover, ExerciseThumb } from './art'
-import { DAY_LABELS, shortDate } from '../lib/dates'
-import { fmtNum, plural } from '../lib/format'
+import { DAY_LABELS, monthShort, shortDate } from '../lib/dates'
+import { fmtNum } from '../lib/format'
+import { tr } from '../lib/i18n'
 
 /* ---------- small controls ---------- */
 export function FavoriteButton({ active, onClick, label, size = 'md', plain }) {
   return (
-    <button type="button" className={cx('fav-btn', `fav-${size}`, plain && 'fav-plain', active && 'is-active')} aria-pressed={active} aria-label={`${active ? 'Remove from' : 'Add to'} favorites: ${label}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick() }}>
+    <button type="button" className={cx('fav-btn', `fav-${size}`, plain && 'fav-plain', active && 'is-active')} aria-pressed={active} aria-label={active ? tr('Remove from favorites: {0}', label) : tr('Add to favorites: {0}', label)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick() }}>
       <Heart size={size === 'sm' ? 15 : 18} fill={active ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
   )
@@ -16,7 +17,7 @@ export function FavoriteButton({ active, onClick, label, size = 'md', plain }) {
 
 export function SaveButton({ active, onClick, label }) {
   return (
-    <button type="button" className={cx('fav-btn', active && 'is-active')} aria-pressed={active} aria-label={`${active ? 'Unsave' : 'Save'} ${label}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick() }}>
+    <button type="button" className={cx('fav-btn', active && 'is-active')} aria-pressed={active} aria-label={active ? tr('Unsave {0}', label) : tr('Save {0}', label)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick() }}>
       <Bookmark size={18} fill={active ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
   )
@@ -38,7 +39,7 @@ export function ProgressCard({ title, subtitle, value, label, tone, to, right })
   const body = (
     <>
       <div className="row between"><div className="grow"><h3 className="truncate">{title}</h3>{subtitle && <p className="caption">{subtitle}</p>}</div>{right || <span className="num num-md">{Math.round(value)}<span className="unit">%</span></span>}</div>
-      <ProgressBar value={value} tone={tone} label={`${title} progress`} />
+      <ProgressBar value={value} tone={tone} label={tr("{0} progress", title)} />
       {label && <p className="caption">{label}</p>}
     </>
   )
@@ -64,14 +65,14 @@ export function WorkoutCard({ workout, saved, onSave, compact }) {
     <Link to={`/workouts/${workout.id}`} className={cx('card card-interactive wcard', compact && 'wcard-compact')}>
       <Cover hue={workout.hue} seed={workout.id.length + workout.exercises.length} className="wcard-cover">
         <div className="wcard-top">
-          <Badge tone="glass">{workout.categories[0]}</Badge>
+          <Badge tone="glass">{tr(workout.categories[0])}</Badge>
           {onSave && <SaveButton active={saved} onClick={onSave} label={workout.title} />}
         </div>
-        <div className="wcard-meta"><span><Clock size={13} aria-hidden="true" /> {workout.minutes} min</span><span><Dumbbell size={13} aria-hidden="true" /> {workout.exercises.length}</span></div>
+        <div className="wcard-meta"><span><Clock size={13} aria-hidden="true" /> {workout.minutes} {tr("min")}</span><span><Dumbbell size={13} aria-hidden="true" /> {workout.exercises.length}</span></div>
       </Cover>
       <div className="wcard-body">
         <h3 className="truncate">{workout.title}</h3>
-        <p className="caption truncate">{workout.level} · {workout.equipment.slice(0, 2).join(', ')} · ~{workout.calories} kcal</p>
+        <p className="caption truncate">{tr(workout.level)} · {workout.equipment.slice(0, 2).map((e) => tr(e)).join('، ')} · ~{workout.calories} {tr("kcal")}</p>
       </div>
     </Link>
   )
@@ -82,13 +83,13 @@ export function CourseCard({ course, progress, featured }) {
   return (
     <Link to={`/courses/${course.id}`} className={cx('card card-interactive ccard', featured && 'ccard-featured')}>
       <Cover hue={course.hue} variant={course.perWeek % 4} className="ccard-cover">
-        <div className="ccard-top"><Badge tone="glass">{course.level}</Badge>{enrolled && <Badge tone="accent">Enrolled</Badge>}</div>
+        <div className="ccard-top"><Badge tone="glass">{tr(course.level)}</Badge>{enrolled && <Badge tone="accent">{tr("Enrolled")}</Badge>}</div>
         <div className="ccard-title"><h3>{course.title}</h3><p>{course.trainer.name}</p></div>
       </Cover>
       <div className="ccard-body">
-        <div className="ccard-facts caption"><span>{course.weeks} weeks</span><span>{course.weeks * course.perWeek} workouts</span><span>{course.perWeek}/week</span><span className="row gap-1"><Star size={12} fill="currentColor" aria-hidden="true" /> {course.rating}</span></div>
+        <div className="ccard-facts caption"><span>{course.weeks} {tr("weeks")}</span><span>{course.weeks * course.perWeek} {tr("workouts")}</span><span>{course.perWeek}{tr("/week")}</span><span className="row gap-1"><Star size={12} fill="currentColor" aria-hidden="true" /> {course.rating}</span></div>
         {enrolled ? (
-          <div className="stack-sm"><ProgressBar value={progress.pct} label={`${course.title} progress`} /><span className="caption">Week {progress.week} of {course.weeks} · {progress.completed}/{progress.total} sessions</span></div>
+          <div className="stack-sm"><ProgressBar value={progress.pct} label={tr("{0} progress", course.title)} /><span className="caption">{tr("Week {0} of {1} · {2}/{3} sessions", progress.week, course.weeks, progress.completed, progress.total)}</span></div>
         ) : (
           <div className="row wrap gap-1">{course.tags.map((t) => <Badge key={t}>{t}</Badge>)}</div>
         )}
@@ -104,8 +105,8 @@ export function ExerciseCard({ exercise, fav, onFav, onClick }) {
       <ExerciseThumb exercise={exercise} size={64} />
       <div className="grow">
         <h3 className="truncate">{exercise.name}</h3>
-        <p className="caption">{exercise.muscle} · {exercise.equipment}</p>
-        <div className="row gap-1 ecard-tags"><Badge>{exercise.type}</Badge><Badge tone={exercise.difficulty === 'Advanced' ? 'warning' : 'neutral'}>{exercise.difficulty}</Badge></div>
+        <p className="caption">{tr(exercise.muscle)} · {tr(exercise.equipment)}</p>
+        <div className="row gap-1 ecard-tags"><Badge>{tr(exercise.type)}</Badge><Badge tone={exercise.difficulty === 'Advanced' ? 'warning' : 'neutral'}>{tr(exercise.difficulty)}</Badge></div>
       </div>
       {onFav && <FavoriteButton active={fav} onClick={onFav} label={exercise.name} size="sm" />}
     </Link>
@@ -117,7 +118,7 @@ export function ExerciseRow({ index, exercise, detail, right, to }) {
     <>
       {index != null && <span className="erow-index num">{String(index).padStart(2, '0')}</span>}
       <ExerciseThumb exercise={exercise} size={44} />
-      <div className="grow"><b className="truncate erow-name">{exercise.name}</b><span className="caption">{exercise.muscle} · {exercise.equipment}</span></div>
+      <div className="grow"><b className="truncate erow-name">{exercise.name}</b><span className="caption">{tr(exercise.muscle)} · {tr(exercise.equipment)}</span></div>
       {detail && <span className="erow-detail num">{detail}</span>}
       {right}
       {to && <ChevronRight size={16} className="faint" aria-hidden="true" />}
@@ -130,9 +131,9 @@ export function WorkoutRow({ log, fmtVol }) {
   const d = new Date(`${log.date}T00:00:00`)
   return (
     <Link to={`/history/${log.id}`} className="wrow">
-      <span className="wrow-date"><b className="num">{d.getDate()}</b><small>{d.toLocaleDateString('en-US', { month: 'short' })}</small></span>
-      <div className="grow"><b className="truncate wrow-title">{log.title}</b><span className="caption">{Math.round(log.duration / 60)} min · {plural(log.exercises, 'exercise')} · {plural(log.sets, 'set')}</span></div>
-      <div className="wrow-right">{log.volume > 0 && <b className="num">{fmtVol(log.volume)}</b>}{log.prs.length > 0 && <Badge tone="accent" icon={Trophy}>{log.prs.length} PR</Badge>}</div>
+      <span className="wrow-date"><b className="num">{d.getDate()}</b><small>{monthShort(d)}</small></span>
+      <div className="grow"><b className="truncate wrow-title">{log.title}</b><span className="caption">{tr("{0} min · {1} exercises · {2} sets", Math.round(log.duration / 60), log.exercises, log.sets)}</span></div>
+      <div className="wrow-right">{log.volume > 0 && <b className="num">{fmtVol(log.volume)}</b>}{log.prs.length > 0 && <Badge tone="accent" icon={Trophy}>{log.prs.length} {tr("PR")}</Badge>}</div>
       <ChevronRight size={16} className="faint" aria-hidden="true" />
     </Link>
   )
@@ -144,11 +145,11 @@ export function GoalCard({ g, onRemove }) {
   return (
     <Card className="goal stack-sm">
       <div className="row-top between">
-        <div className="grow"><span className="eyebrow">{g.group}</span><h3>{g.title}</h3></div>
-        {done ? <Badge tone="success" icon={Check}>Achieved</Badge> : <span className="num num-md">{Math.round(g.pct)}<span className="unit">%</span></span>}
+        <div className="grow"><span className="eyebrow">{tr(g.group)}</span><h3>{g.title}</h3></div>
+        {done ? <Badge tone="success" icon={Check}>{tr("Achieved")}</Badge> : <span className="num num-md">{Math.round(g.pct)}<span className="unit">%</span></span>}
       </div>
       <ProgressBar value={g.pct} tone={done ? 'success' : 'accent'} label={g.title} />
-      <div className="row between"><span className="caption">{g.label}</span><div className="row gap-2">{g.href && <Link className="link caption" to={g.href}>View</Link>}{onRemove && <button type="button" className="link caption" onClick={onRemove}>Remove</button>}</div></div>
+      <div className="row between"><span className="caption">{g.label}</span><div className="row gap-2">{g.href && <Link className="link caption" to={g.href}>{tr("View")}</Link>}{onRemove && <button type="button" className="link caption" onClick={onRemove}>{tr("Remove")}</button>}</div></div>
     </Card>
   )
 }
@@ -160,7 +161,7 @@ export function AchievementCard({ a }) {
     <div className={cx('ach', a.unlocked ? 'is-unlocked' : 'is-locked')}>
       <span className="ach-badge">{a.unlocked ? <Icon size={22} aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}</span>
       <b>{a.title}</b>
-      <span className="caption">{a.unlocked ? 'Unlocked' : `${fmtNum(a.value)} / ${fmtNum(a.target)}`}</span>
+      <span className="caption">{a.unlocked ? tr("Unlocked") : `${fmtNum(a.value)} / ${fmtNum(a.target)}`}</span>
       {!a.unlocked && <ProgressBar value={(a.value / a.target) * 100} height={4} label={a.title} />}
       <span className="sr-only">{a.description}</span>
     </div>
@@ -172,7 +173,7 @@ export function LeaderboardRow({ row, format }) {
     <li className={cx('lb-row', row.you && 'is-you')}>
       <span className="lb-rank num">{row.rank}</span>
       <Avatar name={row.name} hue={row.hue ?? 18} size={34} />
-      <b className="grow truncate">{row.name}{row.you && <Badge tone="accent" className="lb-you">You</Badge>}</b>
+      <b className="grow truncate">{row.name}{row.you && <Badge tone="accent" className="lb-you">{tr("You")}</Badge>}</b>
       <span className="num">{format ? format(row.value) : row.value}</span>
     </li>
   )
@@ -194,7 +195,7 @@ export function ChatMessage({ m, children }) {
 /* ---------- week strip ---------- */
 export function WeekStrip({ keys, days, todayKey }) {
   return (
-    <ol className="weekstrip" aria-label="This week">
+    <ol className="weekstrip" aria-label={tr("This week")}>
       {keys.map((k, i) => {
         const done = days.has(k)
         const isToday = k === todayKey
@@ -202,7 +203,7 @@ export function WeekStrip({ keys, days, todayKey }) {
           <li key={k} className={cx('weekstrip-day', done && 'is-done', isToday && 'is-today')}>
             <span className="caption">{DAY_LABELS[i]}</span>
             <span className="weekstrip-dot" aria-hidden="true">{done ? <Check size={14} strokeWidth={3} /> : <span>{new Date(`${k}T00:00:00`).getDate()}</span>}</span>
-            <span className="sr-only">{done ? 'Workout completed' : isToday ? 'Today' : 'No workout'}, {shortDate(k)}</span>
+            <span className="sr-only">{done ? tr("Workout completed") : isToday ? tr("Today") : tr("No workout")}, {shortDate(k)}</span>
           </li>
         )
       })}

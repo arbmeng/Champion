@@ -16,6 +16,7 @@ function read() {
 export const lang = read()
 export const isRtl = LANGS[lang].dir === 'rtl'
 export const missing = new Set()
+if (typeof window !== 'undefined') window.__i18nMissing = missing
 
 if (typeof document !== 'undefined') {
   document.documentElement.lang = LANGS[lang].tag
@@ -34,6 +35,7 @@ export function tr(key, ...args) {
 }
 
 // Pick a language from content that carries both: { en: '…', ckb: '…' } or a plain string.
+export const comma = lang === 'en' ? ',' : '،'
 export const L = (v) => (v && typeof v === 'object' ? v[lang] ?? v.en ?? '' : v)
 
 export function setLang(next) {

@@ -1,6 +1,6 @@
 import { tr } from '../lib/i18n'
 
-export const friends = [
+const friendRows = [
   { id: 'maya', name: 'Maya Chen', handle: '@mayalifts', level: 'Advanced', hue: 330, weekly: 5, volume: 31200, streak: 64, prs: 3, following: true },
   { id: 'jonas', name: 'Jonas Weber', handle: '@jonasw', level: 'Intermediate', hue: 210, weekly: 4, volume: 24800, streak: 41, prs: 2, following: true },
   { id: 'imani', name: 'Imani Brooks', handle: '@imanib', level: 'Intermediate', hue: 150, weekly: 4, volume: 22150, streak: 38, prs: 1, following: true },
@@ -14,6 +14,8 @@ const groupRows = [
   { id: 'early-lifters', name: '6am Lifters', members: 642, description: 'Morning training accountability.', hue: 200 },
   { id: 'home-gym', name: 'Home Gym Builders', members: 903, description: 'Dumbbells, bands and small-space programming.', hue: 150 },
 ]
+
+export const friends = friendRows.map((f) => ({ ...f, name: tr(f.name) }))
 
 export const groups = groupRows.map((g) => ({ ...g, name: tr(g.name), description: tr(g.description) }))
 
@@ -72,4 +74,4 @@ const deviceRows = [
   { id: 'watch', name: 'Smartwatch', description: 'Live heart rate, calories and recovery signals.', metrics: ['Heart rate', 'Calories', 'Activity'] },
 ]
 
-export const devices = deviceRows.map((d) => ({ ...d, description: tr(d.description), metrics: d.metrics.map(tr) }))
+export const devices = deviceRows.map((d) => ({ ...d, name: tr(d.name), description: tr(d.description), metrics: d.metrics.map(tr) }))

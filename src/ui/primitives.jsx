@@ -1,6 +1,7 @@
 import { forwardRef, useId, useRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AlertTriangle, RotateCcw, Search as SearchIcon, X } from 'lucide-react'
+import { tr } from '../lib/i18n'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
 
@@ -49,7 +50,7 @@ export function ProgressRing({ value = 0, size = 96, stroke = 8, tone = 'accent'
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   return (
-    <div className="ring" style={{ width: size, height: size }} role="img" aria-label={label || `${Math.round(v)} percent`}>
+    <div className="ring" style={{ width: size, height: size }} role="img" aria-label={label || tr("{0} percent", Math.round(v))}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={stroke} />
         <circle className={`ring-${tone}`} cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c - (c * v) / 100} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
@@ -92,7 +93,7 @@ export function SegmentedControl({ items, value, onChange, label, size = 'md', c
 
 export function SectionTabs({ items, className }) {
   return (
-    <nav className={cx('tabs section-tabs', className)} aria-label="Section">
+    <nav className={cx('tabs section-tabs', className)} aria-label={tr("Section")}>
       {items.map((t) => <NavLink key={t.to} to={t.to} end={t.end} className={({ isActive }) => cx('tab', isActive && 'is-active')}>{t.label}</NavLink>)}
     </nav>
   )
@@ -101,8 +102,8 @@ export function SectionTabs({ items, className }) {
 export function FilterChips({ options, value, onChange, all = 'All', label }) {
   return (
     <div className="chips" role="group" aria-label={label}>
-      <button type="button" className={cx('chip', !value && 'is-active')} aria-pressed={!value} onClick={() => onChange(null)}>{all}</button>
-      {options.map((o) => <button key={o} type="button" className={cx('chip', value === o && 'is-active')} aria-pressed={value === o} onClick={() => onChange(value === o ? null : o)}>{o}</button>)}
+      <button type="button" className={cx('chip', !value && 'is-active')} aria-pressed={!value} onClick={() => onChange(null)}>{tr(all)}</button>
+      {options.map((o) => <button key={o} type="button" className={cx('chip', value === o && 'is-active')} aria-pressed={value === o} onClick={() => onChange(value === o ? null : o)}>{tr(o)}</button>)}
     </div>
   )
 }
@@ -125,7 +126,7 @@ export function Select({ label, options, value, onChange, className, ...rest }) 
     <div className={cx('field', className)}>
       {label && <label htmlFor={id} className="field-label">{label}</label>}
       <select id={id} className="input select" value={value} onChange={(e) => onChange(e.target.value)} {...rest}>
-        {options.map((o) => { const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? o : o.label; return <option key={v} value={v}>{l}</option> })}
+        {options.map((o) => { const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? tr(o) : o.label; return <option key={v} value={v}>{l}</option> })}
       </select>
     </div>
   )
@@ -136,7 +137,7 @@ export function SearchField({ value, onChange, placeholder = 'Search', onSubmit,
     <form className={cx('search', className)} role="search" onSubmit={(e) => { e.preventDefault(); onSubmit?.(value) }}>
       <SearchIcon size={18} aria-hidden="true" />
       <input data-search type="search" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} aria-label={placeholder} autoFocus={autoFocus} enterKeyHint="search" />
-      {value ? <button type="button" className="search-clear" aria-label="Clear search" onClick={() => onChange('')}><X size={16} /></button> : <kbd className="kbd hide-mobile" aria-hidden="true">/</kbd>}
+      {value ? <button type="button" className="search-clear" aria-label={tr("Clear search")} onClick={() => onChange('')}><X size={16} /></button> : <kbd className="kbd hide-mobile" aria-hidden="true">/</kbd>}
     </form>
   )
 }
@@ -172,7 +173,7 @@ export function ErrorState({ title = 'Something went wrong', body = 'We could no
       <span className="empty-icon is-danger"><AlertTriangle size={22} aria-hidden="true" /></span>
       <h3>{title}</h3>
       <p className="muted">{body}</p>
-      {onRetry && <Button icon={RotateCcw} onClick={onRetry}>Try again</Button>}
+      {onRetry && <Button icon={RotateCcw} onClick={onRetry}>{tr("Try again")}</Button>}
     </div>
   )
 }
@@ -206,5 +207,5 @@ export function Section({ title, eyebrow, action, children, className }) {
 }
 
 export function BackLink({ to, children }) {
-  return <Link to={to} className="back-link">← {children}</Link>
+  return <Link to={to} className="back-link"><span className="flip-rtl" aria-hidden="true" style={{ display: 'inline-block' }}>←</span> {children}</Link>
 }
