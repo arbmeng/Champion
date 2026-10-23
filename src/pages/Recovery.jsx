@@ -1,0 +1,66 @@
+import { Footprints, Heart, Moon, Watch } from 'lucide-react'
+import { useApp } from '../state/store'
+import { muscleRecovery, recoveryState, weekStats } from '../state/selectors'
+import { devices } from '../data/social'
+import { MUSCLES } from '../data/exercises'
+import { workoutMap } from '../data/workouts'
+import { Badge, Card, PageHeader, ProgressRing, Section, SectionTabs, Toggle } from '../ui/primitives'
+import { ChartCard, MetricCard, WeekStrip, WorkoutCard } from '../ui/domain'
+import { BarsChart } from '../ui/charts'
+import { profileTabs } from '../ui/sections'
+import { dateKey, shortDate, weekKeys } from '../lib/dates'
+import { fmtNum } from '../lib/format'
+
+export function Recovery() {
+  const { state, actions } = useApp()
+  const r = recoveryState(state)
+  const week = weekStats(state, 0)
+  const sleep = state.health.sleep
+  const last = sleep[sleep.length - 1]
+  const steps = state.health.steps
+  const tone = r.score >= 75 ? 'success' : r.score >= 55 ? 'warning' : 'danger'
+  const mob = workoutMap[r.score < 65 ? 'recovery-reset' : 'mobility-flow']
+  const connected = devices.filter((d) => state.devices[d.id])
+  return (
+    <div className="stack-lg">
+      <PageHeader eyebrow="Readiness" title="Recovery" subtitle="Training guidance based on sleep, load and rest — not medical advice." />
+      <SectionTabs items={profileTabs} />
+      <div className="grid-2 wide-left">
+        <Card className="stack">
+          <div className="row gap-6 wrap">
+            <ProgressRing value={r.score} size={140} stroke={12} tone={tone === 'success' ? 'success' : 'accent'} label={`Recovery score ${r.score} out of 100`}><div><div className="num num-xl">{r.score}</div><div className="caption">{r.label}</div></div></ProgressRing>
+            <div className="grow stack-sm"><span className="eyebrow">Recovery recommendation</span><p className="rec-text">{r.advice}</p><div className="row gap-2 wrap"><Badge tone={tone}>Readiness: {r.label}</Badge><Badge>{r.since === 0 ? 'Trained today' : `${r.since}d since last session`}</Badge></div></div>
+          </div>
+        </Card>
+        <Card className="stack-sm">
+          <h3>Rest days this week</h3>
+          <WeekStrip keys={weekKeys()} days={week.days} todayKey={dateKey()} />
+          <p className="caption">{7 - week.workouts} days without a logged session. Planned rest is part of progress.</p>
+        </Card>
+      </div>
+
+      <div className="grid-4">
+        <MetricCard icon={Moon} label="Sleep (last night)" value={last ? last.hours : '—'} unit="h" hint={connected.length ? `quality ${last?.quality}%` : 'connect a device'} />
+        <MetricCard icon={Heart} label="Resting HR" value={state.health.restingHr} unit="bpm" hint="7-day avg" />
+        <MetricCard icon={Footprints} label="Steps today" value={fmtNum(steps[steps.length - 1]?.steps || 0)} hint={`${fmtNum(steps[steps.length - 1]?.active || 0)} active kcal`} />
+        <MetricCard icon={Watch} label="HRV" value={last?.hrv ?? '—'} unit="ms" hint="overnight" />
+      </div>
+
+      <div className="grid-2">
+        <ChartCard title="Sleep" question="Am I sleeping enough to train hard?" foot="Mock data from a connected device. Typical adult guidance is 7–9 hours."><BarsChart data={sleep.map((s) => ({ label: shortDate(s.date), hours: s.hours }))} y="hours" unit="h" height={190} /></ChartCard>
+        <Card className="stack-sm"><h3>Muscle readiness</h3><p className="caption">Based on days since each group was last trained.</p>
+          <ul className="stack-sm">{MUSCLES.map((m) => { const x = muscleRecovery(state, m); return <li key={m} className="row between"><span>{m}</span><span className="row gap-2"><span className="caption">{x.days == null ? 'never' : `${x.days}d ago`}</span><Badge tone={x.tone}>{x.label}</Badge></span></li> })}</ul>
+        </Card>
+      </div>
+
+      <Section title="Mobility" eyebrow="Recommended for you"><div className="grid-auto"><WorkoutCard workout={mob} /></div></Section>
+
+      <Section title="Connected devices" eyebrow="Mock integrations">
+        <Card className="stack-sm">
+          {devices.map((d) => <Toggle key={d.id} label={d.name} description={`${d.description} (${d.metrics.join(', ')})`} checked={Boolean(state.devices[d.id])} onChange={() => actions.toggleDevice(d.id)} />)}
+          <p className="caption">This prototype ships with realistic sample data. No real Apple Health, Health Connect or watch connection is made.</p>
+        </Card>
+      </Section>
+    </div>
+  )
+}

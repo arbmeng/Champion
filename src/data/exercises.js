@@ -1,0 +1,137 @@
+// Exercise knowledge base. `muscle` is the primary muscle used by volume analytics.
+export const MUSCLES = ['Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Glutes', 'Biceps', 'Triceps', 'Core']
+export const EQUIPMENT = ['Barbell', 'Dumbbell', 'Machine', 'Cable', 'Bodyweight', 'Kettlebell']
+export const DIFFICULTY = ['Beginner', 'Intermediate', 'Advanced']
+export const PATTERNS = ['Horizontal push', 'Vertical push', 'Horizontal pull', 'Vertical pull', 'Squat', 'Hinge', 'Lunge', 'Isolation', 'Core', 'Conditioning', 'Mobility']
+
+const patternDefaults = {
+  'Horizontal push': { tempo: '2-0-1 (lower for 2s, press up smoothly)', breathing: 'Inhale on the way down, exhale through the press.', rom: 'Lower until the upper arms are just past parallel with the torso, then press to near lockout.', safety: 'Keep your wrists stacked over your elbows. Use safeties or a spotter on heavy sets.' },
+  'Vertical push': { tempo: '2-0-1', breathing: 'Brace and exhale as you press; reset the breath at the top.', rom: 'From shoulder height to full overhead extension with ribs down.', safety: 'Squeeze glutes and avoid leaning back to finish reps.' },
+  'Horizontal pull': { tempo: '1-1-2 (pause at the squeeze, control the return)', breathing: 'Exhale as you pull, inhale as the arms extend.', rom: 'Reach long at the start, pull the elbows behind the torso, and pause briefly.', safety: 'Keep the spine neutral — do not round to reach extra range.' },
+  'Vertical pull': { tempo: '1-1-3', breathing: 'Exhale while pulling down, inhale on the controlled return.', rom: 'From a long stretch overhead to the upper chest, elbows driving down.', safety: 'Avoid swinging; stop the set when you need momentum to finish.' },
+  Squat: { tempo: '3-0-1', breathing: 'Big breath and brace at the top, hold through the rep, exhale after passing the sticking point.', rom: 'Descend until the hips are at least parallel or as deep as you can keep a neutral spine.', safety: 'Set safeties. Keep knees tracking over the toes and feet planted.' },
+  Hinge: { tempo: '3-1-1', breathing: 'Brace before each rep and keep the brace until you stand tall.', rom: 'Push the hips back until you feel a deep hamstring stretch, then drive hips forward.', safety: 'The back stays flat — stop the lowering phase as soon as your position changes.' },
+  Lunge: { tempo: '2-0-1', breathing: 'Inhale down, exhale as you drive up.', rom: 'Back knee close to the floor with the front shin roughly vertical.', safety: 'Use a controlled stride length and hold a rail for balance if needed.' },
+  Isolation: { tempo: '2-1-2 (squeeze at the peak)', breathing: 'Exhale on effort, steady breath through the stretch.', rom: 'Use the full range you can control; avoid momentum.', safety: 'Choose a load you can control through the whole rep.' },
+  Core: { tempo: 'Slow and controlled', breathing: 'Breathe steadily; do not hold your breath.', rom: 'Move through a pain-free range while keeping ribs and pelvis stacked.', safety: 'Stop if you feel pinching in the lower back.' },
+  Conditioning: { tempo: 'Fast but controlled', breathing: 'Keep a rhythmic breath; rest fully between rounds.', rom: 'Full range on every rep — quality over speed.', safety: 'Scale the work if form breaks down.' },
+  Mobility: { tempo: 'Slow, easy', breathing: 'Slow nasal inhale, long exhale into each position.', rom: 'Move to a comfortable end range — never force a stretch.', safety: 'Mild stretch only; stop if you feel sharp or pinching discomfort.' },
+}
+
+// [id, name, muscle, secondary, equipment, difficulty, pattern, type, sets, [repLo, repHi], rest, startKg, repLabel]
+const rows = [
+  ['bench', 'Barbell Bench Press', 'Chest', ['Triceps', 'Shoulders'], 'Barbell', 'Intermediate', 'Horizontal push', 'Compound', 4, [6, 8], 150, 72.5],
+  ['incline-machine', 'Incline Machine Press', 'Chest', ['Shoulders', 'Triceps'], 'Machine', 'Beginner', 'Horizontal push', 'Compound', 4, [8, 12], 120, 55],
+  ['incline-db', 'Incline Dumbbell Press', 'Chest', ['Shoulders', 'Triceps'], 'Dumbbell', 'Intermediate', 'Horizontal push', 'Compound', 3, [8, 10], 120, 28],
+  ['db-bench', 'Dumbbell Bench Press', 'Chest', ['Triceps', 'Shoulders'], 'Dumbbell', 'Beginner', 'Horizontal push', 'Compound', 3, [8, 12], 120, 30],
+  ['machine-chest', 'Machine Chest Press', 'Chest', ['Triceps', 'Shoulders'], 'Machine', 'Beginner', 'Horizontal push', 'Compound', 3, [10, 12], 90, 50],
+  ['cable-fly', 'Cable Fly', 'Chest', ['Shoulders'], 'Cable', 'Beginner', 'Isolation', 'Isolation', 3, [12, 15], 75, 12.5],
+  ['pushup', 'Push-Up', 'Chest', ['Triceps', 'Shoulders', 'Core'], 'Bodyweight', 'Beginner', 'Horizontal push', 'Bodyweight', 3, [10, 20], 60, 0],
+  ['ohp', 'Overhead Press', 'Shoulders', ['Triceps', 'Core'], 'Barbell', 'Intermediate', 'Vertical push', 'Compound', 3, [6, 8], 150, 42.5],
+  ['db-press', 'Seated Dumbbell Press', 'Shoulders', ['Triceps'], 'Dumbbell', 'Beginner', 'Vertical push', 'Compound', 3, [8, 10], 120, 22],
+  ['lateral', 'Cable Lateral Raise', 'Shoulders', [], 'Cable', 'Beginner', 'Isolation', 'Isolation', 3, [12, 15], 60, 7.5],
+  ['db-lateral', 'Dumbbell Lateral Raise', 'Shoulders', [], 'Dumbbell', 'Beginner', 'Isolation', 'Isolation', 3, [12, 15], 60, 8],
+  ['rear-delt', 'Reverse Pec Deck', 'Shoulders', ['Back'], 'Machine', 'Beginner', 'Isolation', 'Isolation', 3, [12, 15], 60, 30],
+  ['pullup', 'Pull-Up', 'Back', ['Biceps', 'Core'], 'Bodyweight', 'Intermediate', 'Vertical pull', 'Compound', 3, [5, 8], 150, 0],
+  ['lat-pulldown', 'Lat Pulldown', 'Back', ['Biceps'], 'Cable', 'Beginner', 'Vertical pull', 'Compound', 3, [10, 12], 90, 52.5],
+  ['cable-row', 'Seated Cable Row', 'Back', ['Biceps', 'Shoulders'], 'Cable', 'Beginner', 'Horizontal pull', 'Compound', 3, [10, 12], 90, 55],
+  ['bb-row', 'Barbell Row', 'Back', ['Biceps', 'Hamstrings'], 'Barbell', 'Intermediate', 'Horizontal pull', 'Compound', 3, [6, 8], 150, 70],
+  ['chest-row', 'Chest-Supported Row', 'Back', ['Biceps', 'Shoulders'], 'Machine', 'Beginner', 'Horizontal pull', 'Compound', 3, [8, 12], 90, 50],
+  ['db-row', 'One-Arm Dumbbell Row', 'Back', ['Biceps'], 'Dumbbell', 'Beginner', 'Horizontal pull', 'Compound', 3, [8, 12], 90, 30],
+  ['deadlift', 'Conventional Deadlift', 'Back', ['Hamstrings', 'Glutes', 'Core'], 'Barbell', 'Advanced', 'Hinge', 'Compound', 3, [3, 5], 210, 120],
+  ['squat', 'Barbell Back Squat', 'Quads', ['Glutes', 'Core'], 'Barbell', 'Intermediate', 'Squat', 'Compound', 4, [5, 8], 180, 100],
+  ['goblet', 'Goblet Squat', 'Quads', ['Glutes', 'Core'], 'Dumbbell', 'Beginner', 'Squat', 'Compound', 3, [10, 12], 90, 24],
+  ['leg-press', 'Leg Press', 'Quads', ['Glutes', 'Hamstrings'], 'Machine', 'Beginner', 'Squat', 'Compound', 3, [10, 12], 120, 160],
+  ['leg-ext', 'Leg Extension', 'Quads', [], 'Machine', 'Beginner', 'Isolation', 'Isolation', 3, [12, 15], 75, 45],
+  ['lunge', 'Walking Lunge', 'Quads', ['Glutes', 'Hamstrings'], 'Dumbbell', 'Intermediate', 'Lunge', 'Compound', 3, [10, 12], 90, 18],
+  ['split-squat', 'Bulgarian Split Squat', 'Quads', ['Glutes'], 'Dumbbell', 'Intermediate', 'Lunge', 'Compound', 3, [8, 10], 90, 18],
+  ['rdl', 'Romanian Deadlift', 'Hamstrings', ['Glutes', 'Back'], 'Barbell', 'Intermediate', 'Hinge', 'Compound', 3, [8, 10], 150, 90],
+  ['leg-curl', 'Seated Leg Curl', 'Hamstrings', [], 'Machine', 'Beginner', 'Isolation', 'Isolation', 3, [10, 12], 75, 40],
+  ['hip-thrust', 'Barbell Hip Thrust', 'Glutes', ['Hamstrings'], 'Barbell', 'Intermediate', 'Hinge', 'Compound', 3, [8, 12], 120, 100],
+  ['glute-bridge', 'Glute Bridge', 'Glutes', ['Hamstrings', 'Core'], 'Bodyweight', 'Beginner', 'Hinge', 'Bodyweight', 3, [12, 20], 60, 0],
+  ['curl', 'Dumbbell Curl', 'Biceps', ['Back'], 'Dumbbell', 'Beginner', 'Isolation', 'Isolation', 3, [10, 12], 75, 14],
+  ['hammer', 'Hammer Curl', 'Biceps', ['Back'], 'Dumbbell', 'Beginner', 'Isolation', 'Isolation', 3, [10, 12], 75, 14],
+  ['cable-curl', 'Cable Curl', 'Biceps', [], 'Cable', 'Beginner', 'Isolation', 'Isolation', 3, [10, 15], 60, 20],
+  ['pressdown', 'Rope Triceps Pressdown', 'Triceps', [], 'Cable', 'Beginner', 'Isolation', 'Isolation', 3, [10, 12], 75, 25],
+  ['oh-triceps', 'Overhead Triceps Extension', 'Triceps', [], 'Cable', 'Intermediate', 'Isolation', 'Isolation', 3, [10, 12], 75, 22.5],
+  ['skull', 'EZ-Bar Skullcrusher', 'Triceps', ['Shoulders'], 'Barbell', 'Intermediate', 'Isolation', 'Isolation', 3, [8, 12], 90, 30],
+  ['plank', 'Front Plank', 'Core', ['Shoulders', 'Glutes'], 'Bodyweight', 'Beginner', 'Core', 'Bodyweight', 3, [30, 60], 60, 0, 'sec'],
+  ['leg-raise', 'Hanging Leg Raise', 'Core', ['Quads'], 'Bodyweight', 'Intermediate', 'Core', 'Bodyweight', 3, [8, 12], 60, 0],
+  ['cable-crunch', 'Cable Crunch', 'Core', [], 'Cable', 'Beginner', 'Core', 'Isolation', 3, [12, 15], 60, 35],
+  ['kb-swing', 'Kettlebell Swing', 'Glutes', ['Hamstrings', 'Core', 'Back'], 'Kettlebell', 'Intermediate', 'Conditioning', 'Conditioning', 4, [15, 20], 45, 20],
+  ['burpee', 'Burpee', 'Core', ['Chest', 'Quads', 'Shoulders'], 'Bodyweight', 'Intermediate', 'Conditioning', 'Conditioning', 4, [10, 15], 45, 0],
+  ['mtn-climber', 'Mountain Climber', 'Core', ['Shoulders', 'Quads'], 'Bodyweight', 'Beginner', 'Conditioning', 'Conditioning', 4, [30, 45], 30, 0, 'sec'],
+  ['jump-squat', 'Jump Squat', 'Quads', ['Glutes', 'Hamstrings'], 'Bodyweight', 'Intermediate', 'Conditioning', 'Conditioning', 4, [10, 15], 45, 0],
+  ['row-erg', 'Rowing Intervals', 'Back', ['Quads', 'Core', 'Biceps'], 'Machine', 'Beginner', 'Conditioning', 'Cardio', 5, [2, 4], 60, 0, 'min'],
+  ['hip-switch', '90/90 Hip Switch', 'Glutes', ['Core'], 'Bodyweight', 'Beginner', 'Mobility', 'Mobility', 2, [8, 10], 20, 0],
+  ['cat-cow', 'Cat-Cow', 'Core', ['Back'], 'Bodyweight', 'Beginner', 'Mobility', 'Mobility', 2, [8, 10], 15, 0],
+  ['thoracic', 'Thoracic Rotation', 'Back', ['Shoulders', 'Core'], 'Bodyweight', 'Beginner', 'Mobility', 'Mobility', 2, [8, 10], 15, 0],
+  ['wgs', "World's Greatest Stretch", 'Glutes', ['Quads', 'Back', 'Hamstrings'], 'Bodyweight', 'Beginner', 'Mobility', 'Mobility', 2, [5, 6], 15, 0],
+]
+
+const knowledge = {
+  bench: { tech: ['Set your eyes under the bar, retract and depress your shoulder blades, and keep them pinned to the bench.', 'Plant your feet and create leg drive; grip just outside shoulder width with the wrists stacked.', 'Unrack, then lower the bar to the lower chest over 2 seconds with elbows around 45–70° from the torso.', 'Press up and slightly back toward the rack position, finishing with the shoulders still tucked.'], mistakes: ['Flaring elbows to 90° which loads the shoulder joint.', 'Bouncing the bar off the chest.', 'Lifting the hips off the bench to finish reps.'], tip: 'When every set hits 8 reps with 1–2 reps in reserve, add 2.5 kg next session.' },
+  'incline-machine': { tech: ['Adjust the seat so the handles line up with your mid-to-upper chest.', 'Set your shoulder blades back against the pad before you start pressing.', 'Control the lowering phase for two seconds until you feel a stretch across the upper chest.', 'Press smoothly without fully locking out the elbows.'], mistakes: ['Seat too low, turning the lift into a shoulder press.', 'Letting the shoulders roll forward at the top.', 'Rushing the eccentric.'], tip: 'Great for getting close to failure safely — no spotter needed.' },
+  'incline-db': { tech: ['Set the bench to 30° and kick the dumbbells up one at a time.', 'Start with palms facing forward and the dumbbells directly over the shoulders.', 'Lower with control until the elbows are slightly below the bench line.', 'Press up and slightly inward without clanking the dumbbells.'], mistakes: ['Bench angle too steep (shifts load to the front delts).', 'Dumbbells drifting too far forward.'], tip: 'A 30° incline is enough to bias the upper chest.' },
+  'db-bench': { tech: ['Sit with the dumbbells on your thighs, lie back and kick them up.', 'Retract the shoulder blades and press the dumbbells over the chest.', 'Lower with control until the upper arms are just below the bench.', 'Press up, bringing the dumbbells slightly toward each other.'], mistakes: ['Dropping the weights too fast.', 'Arching excessively.'] },
+  'machine-chest': { tech: ['Adjust the seat so the handles sit at mid-chest height.', 'Keep your back flat against the pad and shoulders down.', 'Press forward in one smooth motion.', 'Return slowly until you feel a light chest stretch.'], mistakes: ['Shrugging the shoulders toward the ears.', 'Using momentum to move the stack.'] },
+  'cable-fly': { tech: ['Set the pulleys at shoulder height and take a staggered stance.', 'With a slight bend in the elbows, bring the handles together in a wide arc.', 'Squeeze the chest for one second at the midpoint.', 'Return slowly until the chest stretches without losing shoulder position.'], mistakes: ['Turning the movement into a press by bending the elbows.', 'Letting the shoulders roll forward.'] },
+  pushup: { tech: ['Place the hands just outside shoulder width with a straight line from head to heels.', 'Brace your core and squeeze the glutes.', 'Lower the chest to the floor with elbows at roughly 45°.', 'Press the floor away until the arms are straight.'], mistakes: ['Sagging hips.', 'Flaring elbows wide.', 'Partial range of motion.'] },
+  ohp: { tech: ['Start with the bar at collarbone height, grip just outside the shoulders.', 'Squeeze the glutes and brace your abs.', 'Press the bar straight up, moving your head slightly back, then through.', 'Lock out with the bar over mid-foot and lower with control.'], mistakes: ['Leaning back and turning it into an incline press.', 'Pressing the bar forward instead of straight up.'] },
+  'db-press': { tech: ['Set the seat back to 80–85°.', 'Start with the dumbbells at ear height, palms forward.', 'Press up until the arms are almost straight.', 'Lower slowly back to ear level.'], mistakes: ['Arching hard off the seat.', 'Not controlling the descent.'] },
+  lateral: { tech: ['Set the cable low and stand side-on to the stack.', 'Lead with the elbow and raise the arm out to the side until it is parallel to the floor.', 'Pause briefly at the top.', 'Lower under tension without letting the cable pull you.'], mistakes: ['Swinging the torso.', 'Raising the hand higher than the elbow.'] },
+  'db-lateral': { tech: ['Stand tall with a soft bend in the elbows.', 'Raise the dumbbells out to the sides to shoulder height.', 'Pause briefly.', 'Lower slowly for two seconds.'], mistakes: ['Using momentum.', 'Shrugging the traps.'] },
+  'rear-delt': { tech: ['Adjust the seat so the handles are at shoulder height.', 'Keep the chest on the pad.', 'Sweep the arms back in a wide arc.', 'Return slowly without letting the weight stack touch.'], mistakes: ['Pulling with the traps instead of the rear delts.', 'Using too much weight.'] },
+  pullup: { tech: ['Start from a dead hang with a grip just outside shoulder width.', 'Pull your shoulder blades down, then drive the elbows to your ribs.', 'Get the chin over the bar without craning the neck.', 'Lower under control until the arms are straight.'], mistakes: ['Kipping to finish reps.', 'Half reps at the bottom.'] },
+  'lat-pulldown': { tech: ['Adjust the thigh pad so you are locked in.', 'Lean back slightly and grip just outside shoulder width.', 'Pull the bar to the upper chest by driving the elbows down.', 'Let the bar rise fully to feel the stretch.'], mistakes: ['Leaning back too far and rowing the weight.', 'Pulling behind the neck.'] },
+  'cable-row': { tech: ['Sit tall with a slight bend in the knees.', 'Reach forward without rounding the back.', 'Pull the handle to the lower ribs, driving the elbows back.', 'Pause for one second and return slowly.'], mistakes: ['Rocking the torso for momentum.', 'Shrugging the shoulders.'] },
+  'bb-row': { tech: ['Hinge to about 45° with a neutral spine.', 'Grip just outside the knees and brace the abs.', 'Row the bar to the lower ribs.', 'Lower the bar under control without losing your hinge angle.'], mistakes: ['Standing up as the weight gets heavy.', 'Using the lower back to heave the weight.'] },
+  'chest-row': { tech: ['Set the pad so the handles are reachable with arms straight.', 'Keep the chest glued to the pad.', 'Pull the elbows back and squeeze the shoulder blades.', 'Return slowly until you feel a stretch.'], mistakes: ['Lifting the chest off the pad.', 'Shrugging.'] },
+  'db-row': { tech: ['Place one knee and hand on a bench with a flat back.', 'Let the dumbbell hang under the shoulder.', 'Row it toward the hip, keeping the elbow close.', 'Lower fully to stretch the lat.'], mistakes: ['Rotating the torso.', 'Pulling to the chest instead of the hip.'] },
+  deadlift: { tech: ['Stand with the bar over mid-foot, hinge down and grip just outside the legs.', 'Pull the slack out of the bar and brace your lats and abs.', 'Push the floor away, keeping the bar close to the legs.', 'Lock out the hips and knees together, then lower with control.'], mistakes: ['Jerking the bar off the floor.', 'Rounding the lower back.', 'Letting the bar drift away from the legs.'] },
+  squat: { tech: ['Set the bar on the upper back and brace hard before unracking.', 'Take a shoulder-width stance with toes slightly out.', 'Sit between the hips, keeping the whole foot planted.', 'Drive up through mid-foot, keeping the chest tall.'], mistakes: ['Knees caving inward.', 'Heels lifting off the floor.', 'Losing the brace at the bottom.'] },
+  goblet: { tech: ['Hold the dumbbell at your chest with elbows pointing down.', 'Sit straight down between your legs.', 'Keep the chest tall at the bottom.', 'Stand up by driving through the whole foot.'], mistakes: ['Letting the weight pull the chest forward.', 'Heels lifting.'] },
+  'leg-press': { tech: ['Place feet shoulder-width on the platform, mid-height.', 'Unlock the sled and lower until knees reach about 90° without the pelvis curling up.', 'Press through mid-foot.', 'Stop just short of locking the knees.'], mistakes: ['Lower back lifting off the pad.', 'Locking the knees hard.'] },
+  'leg-ext': { tech: ['Align your knees with the pivot point of the machine.', 'Extend the legs until almost straight.', 'Squeeze the quads for a second.', 'Lower slowly.'], mistakes: ['Swinging the weight up.', 'Dropping the weight fast.'] },
+  lunge: { tech: ['Hold dumbbells at your sides and stand tall.', 'Step forward into a long stride.', 'Lower until the back knee nearly touches the floor.', 'Drive through the front foot into the next step.'], mistakes: ['Short steps that overload the knee.', 'Torso tipping forward.'] },
+  'split-squat': { tech: ['Place the rear foot on a bench behind you.', 'Take a stride long enough for the front shin to stay vertical.', 'Lower straight down with a tall torso.', 'Drive through the front foot to stand.'], mistakes: ['Front foot too close to the bench.', 'Pushing off the back leg.'] },
+  rdl: { tech: ['Stand with the bar at hip height, feet hip-width.', 'Soften the knees and push the hips back.', 'Slide the bar down the thighs until the hamstrings are deeply stretched.', 'Squeeze the glutes to return to standing.'], mistakes: ['Rounding the back.', 'Squatting the weight rather than hinging.', 'Letting the bar drift forward.'], tip: 'Stop the descent when your hamstrings reach full stretch — not when the bar hits the floor.' },
+  'leg-curl': { tech: ['Adjust the pad just above the heels.', 'Curl the legs under you in a smooth arc.', 'Squeeze at the bottom.', 'Return slowly.'], mistakes: ['Lifting the hips off the seat.', 'Using momentum.'] },
+  'hip-thrust': { tech: ['Sit with your upper back against a bench and the bar over the hips.', 'Plant the feet shoulder-width, shins vertical at the top.', 'Drive through the heels until the hips are fully extended.', 'Tuck the chin and pause for a second at the top.'], mistakes: ['Over-arching the lower back at lockout.', 'Feet too far forward.'] },
+  'glute-bridge': { tech: ['Lie on your back with knees bent and feet flat.', 'Press through your heels to lift the hips.', 'Squeeze the glutes at the top.', 'Lower slowly.'], mistakes: ['Hyper-extending the lower back.', 'Pushing through the toes.'] },
+  curl: { tech: ['Stand tall with the elbows pinned to your sides.', 'Curl the dumbbells while rotating the palms up.', 'Squeeze at the top.', 'Lower for 2 seconds.'], mistakes: ['Swinging the torso.', 'Elbows drifting forward.'] },
+  hammer: { tech: ['Hold the dumbbells with palms facing in.', 'Keep elbows tight to your sides.', 'Curl to shoulder height.', 'Lower slowly.'], mistakes: ['Swinging the weights.', 'Cutting the range short.'] },
+  'cable-curl': { tech: ['Set the pulley low and stand close to the stack.', 'Curl with elbows fixed.', 'Squeeze at the top.', 'Resist the cable on the way down.'], mistakes: ['Leaning back.', 'Letting the weight stack crash.'] },
+  pressdown: { tech: ['Set the cable high and stand tall.', 'Pin the elbows at your sides.', 'Press down until the arms are straight.', 'Return until the forearms are just past parallel.'], mistakes: ['Leaning over the stack.', 'Elbows flaring away from the body.'] },
+  'oh-triceps': { tech: ['Face away from the cable with the rope behind your head.', 'Keep the elbows pointing forward.', 'Extend the arms fully overhead.', 'Return until you feel a deep stretch in the triceps.'], mistakes: ['Elbows flaring out.', 'Arching the lower back.'] },
+  skull: { tech: ['Lie on a bench holding the bar over your chest.', 'Bend the elbows to lower the bar toward your forehead.', 'Keep the upper arms still.', 'Extend the arms to the start.'], mistakes: ['Letting the elbows travel back.', 'Using too much weight.'] },
+  plank: { tech: ['Place the elbows under the shoulders.', 'Squeeze the glutes and brace the abs.', 'Keep a straight line from head to heels.', 'Breathe steadily for the set duration.'], mistakes: ['Sagging hips.', 'Holding the breath.'] },
+  'leg-raise': { tech: ['Hang from a bar with an active shoulder position.', 'Posteriorly tilt the pelvis to start the movement.', 'Raise the legs until the hips curl up.', 'Lower slowly without swinging.'], mistakes: ['Swinging for momentum.', 'Only lifting the legs without tilting the pelvis.'] },
+  'cable-crunch': { tech: ['Kneel facing the cable with the rope at the head.', 'Round the spine by bringing the elbows to the knees.', 'Exhale hard at the bottom.', 'Return slowly.'], mistakes: ['Sitting back on the heels.', 'Pulling with the arms instead of the abs.'] },
+  'kb-swing': { tech: ['Hike the kettlebell back between the legs with a flat back.', 'Snap the hips forward to float the bell to chest height.', 'Let the bell fall and hinge back again.', 'Keep a tight plank at the top.'], mistakes: ['Squatting instead of hinging.', 'Lifting with the arms.'] },
+  burpee: { tech: ['Drop the hands to the floor and jump the feet back.', 'Lower the chest, then press up.', 'Jump the feet in under your hips.', 'Jump up and reach overhead.'], mistakes: ['Sagging at the bottom of the push-up.', 'Rushing and losing form.'] },
+  'mtn-climber': { tech: ['Start in a strong high plank.', 'Drive one knee toward the chest.', 'Switch legs quickly.', 'Keep the hips level.'], mistakes: ['Hips bouncing high.', 'Short, shuffling steps.'] },
+  'jump-squat': { tech: ['Sit into a quarter squat.', 'Jump up explosively.', 'Land softly with bent knees.', 'Reset before the next rep.'], mistakes: ['Landing with straight legs.', 'Knees caving in.'] },
+  'row-erg': { tech: ['Strap in and sit tall.', 'Drive with the legs, then lean back, then pull the handle.', 'Reverse the sequence on the way back.', 'Keep a steady stroke rate.'], mistakes: ['Pulling with the arms first.', 'Rounding the back at the catch.'] },
+  'hip-switch': { tech: ['Sit with both knees bent at 90°.', 'Rotate both knees to the other side.', 'Keep the torso tall.', 'Move smoothly between sides.'], mistakes: ['Collapsing the torso.', 'Forcing the range.'] },
+  'cat-cow': { tech: ['Start on hands and knees.', 'Round the spine toward the ceiling.', 'Then arch and look forward.', 'Move slowly with the breath.'], mistakes: ['Rushing the movement.'] },
+  thoracic: { tech: ['Start on all fours with one hand behind the head.', 'Rotate the elbow toward the opposite arm.', 'Open up toward the ceiling.', 'Return and repeat.'], mistakes: ['Rotating from the lower back.'] },
+  wgs: { tech: ['Step into a deep lunge.', 'Place both hands inside the front foot.', 'Rotate the chest toward the front knee and reach up.', 'Step through to the other side.'], mistakes: ['Dropping the back knee early.'] },
+}
+
+const generic = ['Set up in a stable position and brace your core.', 'Move through the full range of motion under control.', 'Pause briefly at the point of peak contraction.', 'Return slowly to the start position.']
+
+export const exercises = rows.map(([id, name, muscle, secondary, equipment, difficulty, pattern, type, sets, reps, rest, weight, repLabel = 'reps']) => {
+  const k = knowledge[id] || {}
+  return {
+    id, name, muscle, secondary, equipment, difficulty, pattern, type, sets, reps, rest, weight, repLabel,
+    weighted: type !== 'Mobility' && type !== 'Conditioning' && type !== 'Cardio' && (weight > 0 || id === 'pullup'),
+    tech: k.tech || generic,
+    mistakes: k.mistakes || ['Rushing the movement.', 'Using momentum instead of muscle.'],
+    tip: k.tip || 'Use a load that leaves 1–3 reps in reserve on most working sets.',
+    ...patternDefaults[pattern],
+  }
+})
+
+export const exerciseMap = Object.fromEntries(exercises.map((e) => [e.id, e]))
+export const getExercise = (id, customExercises = []) => exerciseMap[id] || customExercises.find((e) => e.id === id)
