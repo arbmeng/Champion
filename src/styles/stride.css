@@ -319,7 +319,6 @@ h3 { font-size: .9375rem; font-weight: 600; letter-spacing: 0; }
 .ccard-title p { font-size: .75rem; }
 .feat-cover { min-height: 220px; }
 
-<<<<<<< Updated upstream
 /* ===== Kurdish typography: Vazirmatn throughout (modern, full Sorani coverage, matching Latin digits) ===== */
 :lang(ckb) { --font: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif; --font-display: 'Vazirmatn', system-ui, sans-serif; --font-sans: 'Vazirmatn', system-ui, sans-serif; }
 :lang(ckb) body { font-family: var(--font); line-height: 1.65; font-weight: 450; }
@@ -367,7 +366,6 @@ h3 { font-size: .9375rem; font-weight: 600; letter-spacing: 0; }
 .erow { min-height: 56px; padding: 6px 2px; }
 .page-identity .icon-btn svg { width: 18px; height: 18px; }
 .page-identity .icon-btn { width: 36px; height: 36px; }
-=======
 /* =====================================================================
    ACTIVE WORKOUT — full-screen, sticky header, tight rhythm
    (root is .session-page; .session is the course-session list row)
@@ -417,4 +415,3 @@ h3 { font-size: .9375rem; font-weight: 600; letter-spacing: 0; }
 .queue-btn { background: var(--surface); color: var(--text); box-shadow: 0 0 0 1px var(--line-strong); }
 .queue-btn svg { width: 22px; height: 22px; }
 .toast-region, .toasts { bottom: calc(88px + var(--safe-bottom)) !important; }
->>>>>>> Stashed changes
