@@ -1,6 +1,7 @@
 import { forwardRef, useId, useRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { AlertTriangle, RotateCcw, Search as SearchIcon, X } from 'lucide-react'
+import { AlertTriangle, Bell, RotateCcw, Search as SearchIcon, X } from 'lucide-react'
+import { useApp } from '../state/store'
 import { tr } from '../lib/i18n'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
@@ -178,16 +179,28 @@ export function ErrorState({ title = 'Something went wrong', body = 'We could no
   )
 }
 
-export function PageHeader({ eyebrow, title, subtitle, actions, back }) {
+// Compact identity cluster shown on phones (the top bar is hidden there): notifications + profile.
+function PageIdentity() {
+  const { state } = useApp()
+  const unread = state.notifications.filter((n) => !n.read).length
+  return (
+    <div className="page-identity">
+      <IconButton label={unread ? tr('Notifications, {0} unread', unread) : tr('Notifications')} icon={Bell} to="/notifications" badge={unread} size="sm" />
+      <Link to="/profile" className="id-avatar" aria-label={tr('Profile')}><Avatar name={state.user.name} size={34} hue={18} /></Link>
+    </div>
+  )
+}
+
+export function PageHeader({ eyebrow, title, subtitle, actions, back, identity = true }) {
   return (
     <header className="page-header">
-      <div className="grow">
+      <div className="page-titles">
         {back}
         {eyebrow && <div className="eyebrow">{eyebrow}</div>}
         <h1>{title}</h1>
-        {subtitle && <p className="muted page-sub">{subtitle}</p>}
+        {subtitle && <p className="page-sub">{subtitle}</p>}
       </div>
-      {actions && <div className="page-actions">{actions}</div>}
+      <div className="page-actions">{actions}{identity && <PageIdentity />}</div>
     </header>
   )
 }

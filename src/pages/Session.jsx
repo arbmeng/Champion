@@ -6,7 +6,7 @@ import { exerciseStats, findExercise } from '../state/selectors'
 import { Badge, Button, EmptyState, IconButton, ProgressBar, cx } from '../ui/primitives'
 import { ConfirmSheet, Sheet, useToast } from '../ui/overlays'
 import { ExercisePicker } from '../ui/pickers'
-import { ExerciseThumb, MuscleMap, bodyView } from '../ui/art'
+import { MuscleMap, bodyView } from '../ui/art'
 import { clamp, e1rm, fmtClock, toDisplay, toKg } from '../lib/format'
 import { tr } from '../lib/i18n'
 
@@ -50,17 +50,21 @@ function RirPicker({ value, onChange }) {
   )
 }
 
-function RestPanel({ active, onSkip, onAdjust, nextLabel, now }) {
+function RestRing({ active, onSkip, onAdjust, nextLabel, now }) {
   const left = Math.max(0, Math.ceil((active.restEndsAt - now) / 1000))
-  const pct = active.restTotal ? (left / active.restTotal) * 100 : 0
+  const total = active.restTotal || 1
+  const size = 208, stroke = 8, r = (size - stroke) / 2, c = 2 * Math.PI * r
   return (
-    <div className="rest" role="timer" aria-label={tr("Rest {0}", fmtClock(left))}>
-      <div className="rest-top">
-        <div><span className="eyebrow">{tr("Rest")}</span><div className="rest-time num" aria-live="off">{fmtClock(left)}</div></div>
-        <div className="row gap-2"><Button size="sm" onClick={() => onAdjust(-15000)}>{tr("−15s")}</Button><Button size="sm" onClick={() => onAdjust(15000)}>{tr("+15s")}</Button><Button size="sm" variant="primary" onClick={onSkip}>{tr("Skip")}</Button></div>
+    <div className="restring enter" role="timer" aria-label={tr("Rest {0}", fmtClock(left))}>
+      <div className="restring-dial">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={stroke} />
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--accent)" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c - (c * Math.min(1, left / total))} transform={`rotate(-90 ${size / 2} ${size / 2})`} style={{ transition: 'stroke-dashoffset 300ms linear' }} />
+        </svg>
+        <div className="restring-center"><span className="eyebrow">{tr("Rest")}</span><b className="num">{fmtClock(left)}</b></div>
       </div>
-      <div className="rest-bar"><span style={{ width: `${pct}%` }} /></div>
-      <p className="caption rest-next">{tr("Next:")} <b>{nextLabel}</b></p>
+      <div className="row gap-2 center-row"><Button size="sm" onClick={() => onAdjust(-15000)}>{tr("−15s")}</Button><Button size="sm" onClick={() => onAdjust(15000)}>{tr("+15s")}</Button><Button size="sm" variant="primary" onClick={onSkip}>{tr("Skip")}</Button></div>
+      <p className="caption">{tr("Next:")} <b>{nextLabel}</b></p>
     </div>
   )
 }
@@ -90,6 +94,7 @@ export function Session() {
   const resting = a?.restEndsAt && a.restEndsAt > now
 
   useEffect(() => { setSetIdx(null); window.scrollTo({ top: 0 }) }, [cur])
+  useEffect(() => { if (resting) window.scrollTo({ top: 0, behavior: 'smooth' }) }, [resting])
   useEffect(() => {
     if (a?.restEndsAt && a.restEndsAt <= Date.now()) {
       actions.skipRest()
@@ -149,7 +154,7 @@ export function Session() {
     <div className="session">
       <header className="session-top">
         <IconButton label={tr("Leave session view (workout keeps running)")} icon={ChevronLeft} onClick={() => navigate('/today')} />
-        <div className="grow session-top-title"><b className="truncate">{a.title}</b><span className="caption num">{fmtClock((now - a.startedAt) / 1000)} · {doneSets}/{totalSets} {tr("sets")}</span></div>
+        <div className="grow session-top-center"><span className="session-timer-pill"><span className="eyebrow">{tr("Session time")}</span><b className="num">{fmtClock((now - a.startedAt) / 1000)}</b></span></div>
         <IconButton label={tr("More options")} icon={MoreHorizontal} onClick={() => setMenu(true)} />
         <Button variant="primary" size="sm" onClick={() => setFinish(true)}>{tr("Finish")}</Button>
       </header>
@@ -163,10 +168,16 @@ export function Session() {
               <div className="row gap-1"><IconButton size="sm" label={tr("Previous exercise")} icon={ChevronLeft} onClick={() => go(-1)} disabled={cur === 0} /><IconButton size="sm" label={tr("Next exercise")} icon={ChevronRight} onClick={() => go(1)} disabled={cur === a.exercises.length - 1} /></div>
             </div>
             <div className="session-ex-head">
-              <ExerciseThumb exercise={ex} size={64} />
-              <div className="grow"><h1 className="session-ex-name">{ex.name}</h1><div className="row gap-2 wrap"><Badge tone="accent">{tr(ex.muscle)}</Badge><Badge>{tr(ex.type)}</Badge><button type="button" className="link caption row gap-1" onClick={() => setTech(true)}><Info size={14} aria-hidden="true" /> {tr("Technique")}</button></div></div>
+              <h1 className="session-ex-name">{ex.name}</h1>
+              <div className="row gap-2 wrap center-row">
+                {set && <span className="set-chip">{tr("Set {0} of {1}", activeSet + 1, item.sets.length)}</span>}
+                <Badge tone="accent">{tr(ex.muscle)}</Badge>
+                <button type="button" className="link caption row gap-1" onClick={() => setTech(true)}><Info size={14} aria-hidden="true" /> {tr("Technique")}</button>
+              </div>
             </div>
           </div>
+
+          {resting && <RestRing active={a} now={now} onSkip={actions.skipRest} onAdjust={actions.adjustRest} nextLabel={upcoming} />}
 
           {set ? (
             <div className="logger enter">
@@ -216,6 +227,11 @@ export function Session() {
               })}
             </ol>
           </section>
+
+          <div className="upnext">
+            <span className="eyebrow">{tr("Up next")}</span>
+            {nextEx ? <div className="row between"><b>{findExercise(state, nextEx.exerciseId).name}</b><span className="caption">{tr("{0} sets", nextEx.sets.length)}</span></div> : <b>{tr("Finish workout")}</b>}
+          </div>
         </div>
 
         <aside className="session-queue" aria-label={tr("Exercises in this workout")}>
@@ -224,9 +240,7 @@ export function Session() {
       </div>
 
       <footer className="session-cta">
-        {resting ? (
-          <RestPanel active={a} now={now} nextLabel={upcoming} onSkip={actions.skipRest} onAdjust={actions.adjustRest} />
-        ) : set ? (
+        {set ? (
           <div className="session-cta-row">
             <Button size="lg" icon={List} onClick={() => setQueue(true)} className="queue-btn" aria-label={tr("Exercise list")}><span className="sr-only">{tr("Exercises")}</span></Button>
             <Button variant="primary" size="xl" block icon={Check} onClick={complete}>{tr("Complete set")}</Button>
