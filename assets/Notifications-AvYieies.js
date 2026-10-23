@@ -1,0 +1,11 @@
+import{c as r,u,X as x,q as e,P as k,B as i,o as s,S as f,Z as g,aV as j,T as y,bm as n,b3 as b,Q as N,E as C}from"./index-57HF-VxE.js";import{T as v}from"./trash-Cz-WyfWY.js";import{A as w}from"./award-BswBwSiD.js";import{T}from"./trophy-C-_n9SMz.js";/**
+ * @license lucide-react v1.61.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const l={name:"calendar-check",size:24,node:[["path",{d:"M8 2v3",key:"1ioesn"}],["path",{d:"M16 2v3",key:"otl347"}],["rect",{x:"3",y:"3",width:"18",height:"18",rx:"2",key:"h1oib"}],["path",{d:"M3 9h18",key:"1pudct"}],["path",{d:"m9 15 2 2 4-4",key:"1grp1n"}]]};l.node;const c=r(l);/**
+ * @license lucide-react v1.61.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const d={name:"check-check",size:24,node:[["path",{d:"M18 6 7 17l-5-5",key:"116fxf"}],["path",{d:"m22 10-7.5 7.5L13 16",key:"ke71qq"}]]};d.node;const A=r(d),M={workout:c,course:c,pr:T,goal:y,challenge:j,friend:g,coach:f,achievement:w};function B(){const{state:h,actions:t}=u(),p=x(),o=h.notifications;return e.jsxs("div",{className:"stack-lg",children:[e.jsx(k,{eyebrow:s("Inbox"),title:s("Notifications"),actions:o.length?e.jsxs(e.Fragment,{children:[e.jsx(i,{icon:A,onClick:t.notifReadAll,children:s("Mark all read")}),e.jsx(i,{variant:"ghost",icon:v,onClick:t.notifClear,children:s("Clear")})]}):null}),o.length?e.jsx("ul",{className:"stack-sm",children:o.map(a=>{const m=M[a.type]||n;return e.jsx("li",{children:e.jsxs("button",{type:"button",className:N("notif",!a.read&&"is-unread"),onClick:()=>{t.notifRead(a.id),a.href&&p(a.href)},children:[e.jsx("span",{className:"notif-icon",children:e.jsx(m,{size:18,"aria-hidden":"true"})}),e.jsxs("span",{className:"grow",children:[e.jsx("b",{children:a.title}),e.jsx("span",{className:"muted notif-body",children:a.body})]}),e.jsx("span",{className:"caption",children:b(a.ts)}),!a.read&&e.jsx("span",{className:"notif-dot","aria-label":s("Unread")})]})},a.id)})}):e.jsx(C,{icon:n,title:s("You’re all caught up"),body:s("Workout reminders, PRs and challenge updates will show up here.")})]})}export{B as Notifications};
