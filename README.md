@@ -32,7 +32,7 @@ Keyboard shortcuts: `/` search · `g` then `t/c/w/e/p/h/o/m/a/n/r` to navigate �
 - `src/state/store.jsx` — one reducer + context for all app state, persisted to `localStorage`.
 - `src/state/selectors.js` — pure derivations (PRs, volume, streaks, course progress, goals, achievements, recovery). Screens never duplicate this logic.
 - `src/state/seed.js` — deterministic demo profile generated relative to today's date.
-- `src/data/*` — exercises (50), workouts (22), courses (4), social, challenges, foods.
+- `src/data/*` — exercises (47), workouts (20), courses (4), social, challenges, foods.
 - `src/ui/*` — design system: primitives, overlays (sheet/modal/drawer/toast), charts, art, domain components.
 - `src/styles/*` — tokens (light + dark), base, components, layout, pages.
 - Routing is `HashRouter` so it works on GitHub Pages; pages are lazy-loaded.
