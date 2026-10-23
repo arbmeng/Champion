@@ -2,30 +2,52 @@ import { tr } from '../lib/i18n'
 import { useId } from 'react'
 import { cx } from './primitives'
 
-// Original generated cover art: layered geometry on a hue-tinted ground. No photos, no stock.
-export function Cover({ hue = 18, seed = 0, variant, className, children, rounded = true }) {
+// Original generated cover art — a dark, grainy "studio shot" look with a rim-lit equipment silhouette.
+// Drawn in SVG (no photos, no stock) so it stays light, offline-friendly and on-brand.
+export function Cover({ hue: rawHue = 18, seed = 0, variant, className, children, rounded = true }) {
+  // Keep covers in a warm-graphite / steel family so every card feels like one studio shoot.
+  const hue = [18, 24, 212, 14, 30, 204][Math.abs(Math.round(rawHue)) % 6]
   const id = useId().replace(/:/g, '')
   const v = variant ?? seed % 4
-  const h2 = (hue + 24) % 360
+  const tint = (l, s2 = 14) => `hsl(${hue} ${s2}% ${l}%)`
+  const rim = `hsl(${hue} 70% 62%)`
   return (
     <div className={cx('cover', className)} style={{ borderRadius: rounded ? undefined : 0 }}>
       <svg className="cover-art" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <defs>
-          <linearGradient id={`g${id}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor={`hsl(${hue} 42% 17%)`} />
-            <stop offset="1" stopColor={`hsl(${h2} 48% 9%)`} />
-          </linearGradient>
-          <linearGradient id={`a${id}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={`hsl(${hue} 85% 58%)`} stopOpacity=".95" />
-            <stop offset="1" stopColor={`hsl(${h2} 85% 50%)`} stopOpacity=".6" />
-          </linearGradient>
+          <linearGradient id={`g${id}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor={tint(19)} /><stop offset="1" stopColor={tint(7, 18)} /></linearGradient>
+          <radialGradient id={`l${id}`} cx=".78" cy=".18" r=".7"><stop offset="0" stopColor={`hsl(${hue} 40% 62%)`} stopOpacity=".34" /><stop offset="1" stopColor={`hsl(${hue} 40% 40%)`} stopOpacity="0" /></radialGradient>
+          <linearGradient id={`s${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".72" /></linearGradient>
+          <filter id={`n${id}`} x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch" /><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0" /></filter>
         </defs>
         <rect width="400" height="240" fill={`url(#g${id})`} />
-        {v === 0 && <g fill="none" stroke={`hsl(${hue} 60% 60%)`} strokeOpacity=".22">{Array.from({ length: 9 }, (_, i) => <circle key={i} cx="320" cy="60" r={30 + i * 26} />)}</g>}
-        {v === 1 && <g stroke={`hsl(${hue} 60% 62%)`} strokeOpacity=".2" strokeWidth="1.5">{Array.from({ length: 18 }, (_, i) => <line key={i} x1={-40 + i * 36} y1="260" x2={80 + i * 36} y2="-20" />)}</g>}
-        {v === 2 && <g fill={`hsl(${hue} 60% 60%)`} fillOpacity=".16">{Array.from({ length: 6 }, (_, i) => <rect key={i} x={170 + i * 36} y={150 - i * 22} width="22" height={90 + i * 22} rx="3" />)}</g>}
-        {v === 3 && <g fill="none" stroke={`hsl(${hue} 60% 62%)`} strokeOpacity=".24" strokeWidth="1.5">{Array.from({ length: 8 }, (_, i) => <path key={i} d={`M-10 ${210 - i * 18} C 120 ${150 - i * 18}, 240 ${290 - i * 18}, 420 ${130 - i * 18}`} />)}</g>}
-        <rect x="0" y="234" width="400" height="6" fill={`url(#a${id})`} opacity=".5" />
+        <rect width="400" height="240" fill={`url(#l${id})`} />
+        {v === 0 && (
+          <g transform="rotate(-14 270 110)" fill={tint(10, 16)} stroke={rim} strokeOpacity=".18" strokeWidth="1.2" opacity=".85">
+            <rect x="120" y="106" width="300" height="9" rx="4" />
+            {[[168, 62, 46, 100], [190, 76, 34, 72], [330, 62, 46, 100], [308, 76, 34, 72]].map(([x, y, w, h], i) => <rect key={i} x={x} y={y} width={w} height={h} rx="7" />)}
+          </g>
+        )}
+        {v === 1 && (
+          <g fill={tint(11, 16)} stroke={rim} strokeOpacity=".28" strokeWidth="1.2">
+            <circle cx="300" cy="140" r="58" />
+            <path d="M262 100c0-42 76-42 76 0" fill="none" strokeWidth="14" stroke={tint(11, 16)} />
+            <path d="M268 98c2-34 64-34 66 0" fill="none" strokeOpacity=".32" />
+          </g>
+        )}
+        {v === 2 && (
+          <g fill={tint(10, 16)} stroke={rim} strokeOpacity=".16" strokeWidth="1.2" opacity=".8">
+            {[0, 1, 2, 3].map((i) => <rect key={i} x={262 + i * 40} y={60 + (i % 2) * 22} width="20" height="230" rx="3" />)}
+            <rect x="196" y="118" width="210" height="8" rx="4" />
+          </g>
+        )}
+        {v === 3 && (
+          <g fill="none" stroke={rim} strokeOpacity=".3" strokeWidth="1.4">
+            {Array.from({ length: 7 }, (_, i) => <path key={i} d={`M120 ${200 - i * 6} C 210 ${120 - i * 12}, 280 ${260 - i * 10}, 430 ${70 + i * 7}`} />)}
+          </g>
+        )}
+        <rect width="400" height="240" fill={`url(#s${id})`} />
+        <rect width="400" height="240" filter={`url(#n${id})`} opacity=".07" />
       </svg>
       {children}
     </div>

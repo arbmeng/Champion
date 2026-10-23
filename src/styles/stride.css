@@ -1,0 +1,320 @@
+/* ===== Editorial design layer =====
+   Calm, compact, premium: small serif titles, tiny tracked labels, dense white cards, dark "studio" covers.
+   Loaded last so it refines the component styles beneath it. */
+:root {
+  --font-display: 'Newsreader', 'Noto Naskh Arabic', Georgia, 'Times New Roman', serif;
+  --fs-body: .875rem; --fs-label: .75rem; --fs-caption: .6875rem;
+  --r-sm: 8px; --r-md: 10px; --r-lg: 14px; --r-xl: 16px;
+  --topbar-h: 56px;
+}
+:root, :root[data-theme='light'] { --bg: #f7f5f1; --line: rgba(24, 21, 16, .08); --shadow-1: none; }
+body { font-size: var(--fs-body); }
+
+/* ---- type ---- */
+h1, h2, .display { font-family: var(--font-display); font-weight: 600; letter-spacing: -.012em; }
+h1 { font-size: 1.75rem; line-height: 1.1; }
+h2 { font-size: 1.1875rem; line-height: 1.2; }
+h3 { font-size: .9375rem; font-weight: 600; letter-spacing: 0; }
+.eyebrow { font-size: .625rem; font-weight: 600; letter-spacing: .14em; color: var(--text-3); }
+.caption { font-size: var(--fs-caption); }
+.num { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em; font-variant-numeric: lining-nums tabular-nums; }
+.num-xl { font-size: 2.25rem; } .num-lg { font-size: 1.625rem; } .num-md { font-size: 1.1875rem; }
+.unit { font-family: var(--font-sans, inherit); font-size: .6875rem; font-weight: 600; letter-spacing: .02em; }
+:lang(ckb) .eyebrow { font-size: .72rem; letter-spacing: 0; font-weight: 600; }
+:lang(ckb) h1, :lang(ckb) h2, :lang(ckb) .num { font-weight: 700; }
+:lang(ckb) h1 { font-size: 1.6rem; line-height: 1.35; }
+
+/* ---- page header ---- */
+.page-header { align-items: center; gap: var(--s-3); margin-bottom: var(--s-5); }
+.page-titles { flex: 1 1 0; min-width: 0; }
+.page-titles .eyebrow { margin-bottom: 4px; }
+.page-sub { margin-top: 4px; font-size: var(--fs-label); color: var(--text-3); max-width: 60ch; }
+.page-actions { display: flex; align-items: center; gap: 8px; }
+.page-identity { display: none; align-items: center; gap: 4px; }
+.id-avatar { display: inline-flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--line-strong); }
+.page-header .page-actions:empty { display: none; }
+.stack-lg { gap: var(--s-6); }
+.section { margin-top: var(--s-6); }
+.section-title { font-size: 1.0625rem; }
+.section-head { margin-bottom: var(--s-3); align-items: center; }
+
+/* mobile: the page header replaces the top bar */
+@media (max-width: 759px) {
+  .topbar { display: none; }
+  .content { padding-top: calc(env(safe-area-inset-top, 0px) + 18px); }
+  .page-identity { display: flex; }
+  .page-sub { display: none; }
+  .page-header { margin-bottom: var(--s-4); }
+  .page-header .page-actions { flex-wrap: nowrap; }
+}
+@media (min-width: 760px) { .page-identity { display: none; } }
+
+/* ---- cards ---- */
+.card { box-shadow: none; border-color: var(--line); }
+.card-pad { padding: 14px 16px; }
+.card-interactive:hover { box-shadow: none; transform: none; border-color: var(--line-strong); }
+.card-flat { background: var(--surface-2); }
+.card-accent { background: var(--surface); border-color: var(--accent-line); }
+
+/* ---- buttons ---- */
+.btn { min-height: 40px; padding: 0 16px; font-size: .8125rem; font-weight: 600; letter-spacing: 0; border-radius: 999px; }
+.btn-sm { min-height: 32px; padding: 0 12px; font-size: .75rem; }
+.btn-lg { min-height: 44px; padding: 0 20px; }
+.btn-xl { min-height: 46px; padding: 0 22px; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; border-radius: 999px; }
+:lang(ckb) .btn-xl { text-transform: none; letter-spacing: 0; font-size: .875rem; }
+.btn-primary { box-shadow: 0 6px 16px -8px var(--accent); }
+.btn-secondary { background: var(--surface); }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; }
+.icon-btn-sm { width: 34px; height: 34px; }
+.input, .search { min-height: 42px; border-radius: 12px; font-size: .875rem; }
+.search { border-radius: 999px; }
+.input { border-radius: 12px; }
+
+/* ---- chips & tabs ---- */
+.chip { min-height: 30px; padding: 0 14px; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border-color: var(--line); background: var(--surface); color: var(--text-2); }
+:lang(ckb) .chip { text-transform: none; letter-spacing: 0; font-size: .75rem; }
+.chip.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.tabs { border-bottom: 0; gap: 2px; padding: 3px; background: var(--surface-2); border-radius: 999px; width: fit-content; max-width: 100%; }
+.tab { padding: 7px 14px; font-size: .75rem; border-radius: 999px; color: var(--text-2); }
+.tab.is-active { background: var(--surface); color: var(--text); box-shadow: 0 0 0 1px var(--line); }
+.tab.is-active::after { display: none; }
+.seg { border-radius: 999px; padding: 3px; }
+.seg-item { border-radius: 999px; min-height: 30px; font-size: .75rem; }
+.subtabs { margin-top: 0; }
+
+/* ---- metric tiles ---- */
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 900px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.metric { gap: 14px; padding: 13px 14px; min-height: 92px; justify-content: space-between; }
+.metric-top { justify-content: flex-start; gap: 7px; }
+.metric-top::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.metric:nth-child(2n) .metric-top::before { background: var(--success); }
+.metric:nth-child(3n) .metric-top::before { background: var(--info); }
+.metric-icon { display: none; }
+.metric-value { font-size: 1.75rem; line-height: 1; }
+.metric-foot { text-transform: uppercase; letter-spacing: .1em; font-size: .5625rem; font-weight: 600; color: var(--text-3); }
+:lang(ckb) .metric-foot { text-transform: none; letter-spacing: 0; font-size: .7rem; }
+.grid-4 { gap: 10px; }
+
+/* ---- weekly activity (rings) ---- */
+.activity { display: flex; flex-direction: column; gap: 14px; }
+.activity-head { display: flex; align-items: center; justify-content: space-between; }
+.activity-body { display: flex; align-items: center; gap: 22px; }
+.rings { flex: none; }
+.ring-arc { transition: stroke-dashoffset 1s var(--ease); }
+.activity-legend { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.activity-legend li { display: grid; grid-template-columns: 8px 1fr auto; align-items: center; gap: 8px; }
+.activity-legend i { width: 7px; height: 7px; border-radius: 50%; }
+.activity-legend b { font-size: 1.125rem; } .activity-legend small { font-size: .6875rem; color: var(--text-3); font-family: inherit; font-weight: 600; }
+.weekstrip-dot { border-radius: 10px; max-width: 38px; font-size: .75rem; }
+
+/* ---- hero (today's workout) ---- */
+.hero { min-height: 232px; border-radius: 16px; }
+.hero-inner { gap: var(--s-5); padding: 16px; justify-content: flex-end; }
+.hero-title { font-family: var(--font-display); font-size: 1.625rem; line-height: 1.2; font-weight: 600; letter-spacing: -.01em; }
+:lang(ckb) .hero-title { font-size: 1.45rem; line-height: 1.45; font-weight: 700; }
+.hero-course { font-size: .6875rem; }
+.hero-meta { font-size: .6875rem; gap: 4px 14px; opacity: .85; }
+.hero-progress-label { font-size: .6875rem; }
+.hero-actions { margin-top: 6px; gap: 8px; }
+.hero-cta { flex: 0 0 auto; max-width: none; min-height: 42px; padding: 0 20px; }
+.hero .btn-glass.btn-lg { min-height: 42px; font-size: .75rem; padding: 0 16px; }
+.hero-choose { margin-top: 0; }
+.hero-choose .btn { background: transparent; border-color: rgba(255, 255, 255, .22); font-weight: 500; }
+.cover { border-radius: 16px; }
+
+/* ---- workout cards: dark studio covers with overlaid text ---- */
+.wcard { border: 0; background: transparent; }
+.wcard-cover { aspect-ratio: 16 / 9; padding: 12px 14px; justify-content: space-between; border-radius: 16px; }
+.wcard-compact .wcard-cover { aspect-ratio: 16 / 9; }
+.wcard-top { justify-content: flex-end; }
+.wcard-over { display: flex; flex-direction: column; gap: 3px; }
+.wcard-kicker { font-size: .5625rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .72; }
+:lang(ckb) .wcard-kicker { letter-spacing: 0; text-transform: none; font-size: .7rem; }
+.wcard-title { font-family: var(--font-display); font-size: 1.1875rem; line-height: 1.2; color: #fff; font-weight: 600; }
+:lang(ckb) .wcard-title { font-size: 1.05rem; line-height: 1.5; font-weight: 700; }
+.wcard-meta { display: inline-flex; align-items: center; gap: 8px; font-size: .625rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+:lang(ckb) .wcard-meta { letter-spacing: 0; text-transform: none; font-size: .7rem; }
+.wcard-meta i { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); }
+.fav-btn { width: 34px; height: 34px; }
+.recs > .wcard, .recs > div { width: min(76vw, 300px); }
+
+/* ---- course cards & misc ---- */
+.ccard { border-radius: 16px; }
+.ccard-title h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
+.course-title, .feat-title, .complete-title { font-family: var(--font-display); font-weight: 600; }
+.course-title { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem); }
+.course-hero { min-height: 240px; border-radius: 16px; }
+.session-title { font-family: var(--font-display); font-size: 1.0625rem; font-weight: 600; }
+.insight-text { font-family: var(--font-display); font-size: 1.0625rem; line-height: 1.4; font-weight: 600; }
+.course-continue-title { font-size: 1.125rem; }
+.quick { padding: 12px 14px; flex-direction: row; align-items: center; gap: 10px; }
+.quick svg { margin: 0; }
+.quick b { font-size: .8125rem; } .quick .caption { margin-inline-start: auto; }
+.upcoming-title { font-size: .8125rem; }
+
+/* ---- navigation ---- */
+.bottom-nav { background: color-mix(in srgb, var(--surface) 96%, transparent); border-top-color: var(--line); }
+.bottom-link { font-size: .5625rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; gap: 4px; }
+:lang(ckb) .bottom-link { letter-spacing: 0; text-transform: none; font-size: .68rem; }
+.bottom-link svg { width: 20px; height: 20px; }
+.bottom-link.is-active::before { top: 6px; width: 4px; height: 4px; border-radius: 50%; }
+.side-link { font-size: .8125rem; font-weight: 600; }
+.logo-word { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; }
+.topbar { background: color-mix(in srgb, var(--bg) 92%, transparent); }
+
+/* ---- lists ---- */
+.wrow, .session, .plan-row, .notif { border-radius: 14px; }
+.wrow-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; }
+.erow-name { font-size: .875rem; }
+.empty { border-radius: 14px; }
+.empty h3 { font-family: var(--font-display); font-size: 1.0625rem; }
+.rtable th { letter-spacing: .1em; font-size: .5625rem; }
+.ach-badge { border-radius: 14px; }
+
+/* ---- active workout: calm, centred, ring-led ---- */
+.session-top { padding-inline: 14px; }
+.session-timer-pill { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 18px; border-radius: 999px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.session-timer-pill .eyebrow { font-size: .5rem; }
+.session-timer-pill b { font-family: var(--font-display); font-size: 1.0625rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.session-ex-name { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+:lang(ckb) .session-ex-name { font-size: 1.4rem; line-height: 1.5; font-weight: 700; }
+.logger { border-radius: 16px; padding: 14px; gap: 12px; box-shadow: none; }
+.logger-set { font-family: var(--font-display); font-size: 1.25rem; }
+.numfield-label { font-size: .5625rem; letter-spacing: .14em; }
+:lang(ckb) .numfield-label { font-size: .7rem; letter-spacing: 0; }
+.numfield-input input { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; }
+.numfield-btn { min-height: 54px; border-radius: 14px; background: var(--surface-2); border-color: transparent; }
+.rir-btn, .quick-add button { border-radius: 12px; }
+.rest { border-radius: 18px; padding: 14px 16px; box-shadow: var(--shadow-2); }
+.rest-time { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; color: var(--text); }
+.rest-ring { display: grid; place-items: center; }
+.session-cta-row .btn-xl { min-height: 52px; }
+.queue-btn { min-height: 52px; width: 52px; border-radius: 50%; }
+
+/* ---- complete screen ---- */
+.complete-stats { border-radius: 14px; }
+.complete-stats .num-xl { font-size: 1.9rem; }
+
+/* ---- keep Latin numerals crisp inside Kurdish serif numbers ---- */
+[dir='rtl'] .num { unicode-bidi: plaintext; }
+
+@media (max-width: 639px) { .page-header { flex-direction: row !important; align-items: center !important; } }
+.page-titles { text-align: start; }
+
+/* ---- session (reference layout) ---- */
+.session-top-center { display: flex; justify-content: center; }
+.session-ex { align-items: stretch; }
+.session-ex-head { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; margin-top: 4px; }
+.session-ex-name { margin: 0; }
+.set-chip { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+:lang(ckb) .set-chip { letter-spacing: 0; text-transform: none; font-size: .75rem; }
+.restring { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 6px 0 2px; }
+.restring-dial { position: relative; width: 208px; height: 208px; }
+.restring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.restring-center b { font-family: var(--font-sans, inherit); font-size: 2.75rem; line-height: 1; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.upnext { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.upnext b { font-size: .875rem; }
+.session-top-title { display: none; }
+
+/* =====================================================================
+   SPACING SYSTEM — one scale, applied everywhere
+   gutter 20 · card padding 16 · stack 16 · section gap 28 · tight 8/12
+   ===================================================================== */
+:root { --gutter: 20px; --pad-card: 16px; --gap-section: 28px; --gap-stack: 16px; --gap-grid: 12px; }
+:root, :root[data-theme='light'] { --bg: #f6f4ef; --surface-2: #efede7; --surface-3: #e4e1d9; --line: rgba(28, 24, 18, .08); --line-strong: rgba(28, 24, 18, .16); --text-2: #4d4a44; --text-3: #85817a; }
+.shell { --page-pad: var(--gutter); }
+@media (min-width: 760px) { .shell { --page-pad: 28px; } }
+@media (min-width: 1200px) { .shell { --page-pad: 40px; } }
+
+/* vertical rhythm: gaps come from the container, never from stacked margins */
+.stack-lg { gap: var(--gap-section); }
+.stack-lg > .section, .stack-lg > section { margin-top: 0; }
+.stack { gap: var(--gap-stack); }
+.stack-sm { gap: 8px; }
+.grid, .grid-2, .grid-3, .grid-4, .grid-auto { gap: var(--gap-grid); }
+.section { margin-top: var(--gap-section); }
+.section-head { margin-bottom: 12px; }
+.page-header { margin-bottom: 0; }
+.stack-lg > .page-header + .tabs, .stack-lg > .page-header + nav.tabs { margin-top: -12px; }
+.stack-lg > .tabs + .tabs, .stack-lg > nav.tabs + .tabs { margin-top: -12px; }
+.card-pad { padding: var(--pad-card); }
+.content { padding: calc(env(safe-area-inset-top, 0px) + 20px) var(--page-pad) calc(var(--bottom-nav-h) + var(--safe-bottom) + 40px); }
+@media (min-width: 760px) { .content { padding-top: 28px; padding-bottom: 56px; } }
+.today { gap: var(--gap-section); }
+.today-main, .today-side { gap: var(--gap-section); }
+.today-side { gap: var(--gap-stack); }
+
+/* cards and their insides */
+.card.stack, .card.stack-sm { gap: 12px; }
+.card .caption + .caption { margin-top: 2px; }
+.metric { padding: 14px 16px; gap: 12px; min-height: 96px; }
+.activity { gap: 16px; padding: var(--pad-card); }
+.activity-body { gap: 24px; }
+.hero-inner { padding: 20px; gap: 18px; }
+.hero-actions { margin-top: 4px; }
+.wrow { padding: 12px 14px; }
+.session { padding: 12px 14px; }
+.plan-row { padding: 12px 14px; }
+.notif { padding: 12px 14px; }
+.erow { padding: 8px 4px; min-height: 60px; }
+.ecard { padding: 12px 14px; }
+.empty { padding: 36px 20px; }
+.challenge-body, .ccard-body { padding: 14px 16px 16px; }
+.ach { padding: 16px 10px; }
+
+/* scrollers align to the gutter */
+.scroll-x { gap: 12px; padding-bottom: 4px; }
+.chips { gap: 8px; }
+.row.gap-2 { gap: 8px; }
+
+/* ---- active workout rhythm ---- */
+.session-top { padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 10px; gap: 8px; }
+.session-body { padding: 16px var(--gutter) 200px; gap: 20px; }
+.session-main { gap: 16px; }
+.session-ex { gap: 8px; }
+.session-ex-head { margin-top: 0; gap: 10px; }
+.logger { padding: 16px; gap: 14px; }
+.sethist .stack-sm { margin-top: 10px; gap: 8px; }
+.setrow-main { display: flex; flex-wrap: nowrap; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; }
+.setrow-val { flex: 1; min-width: 0; }
+.setrow-prev { margin-inline-start: 0; white-space: nowrap; }
+@media (max-width: 639px) { .setrow-prev { display: none; } }
+.upnext { padding: 14px 16px; }
+.session-cta { padding: 12px var(--gutter) calc(14px + var(--safe-bottom)); }
+.restring { padding: 4px 0 0; gap: 14px; }
+
+/* ---- complete + onboarding ---- */
+.complete { padding: 28px var(--gutter) 48px; }
+.complete-inner { gap: 16px; }
+.complete-stats > div { padding: 16px; }
+.onb { padding: 16px var(--gutter); }
+.onb-body { padding: 24px 0; gap: 20px; }
+
+/* ---- sheets ---- */
+.sheet-head { padding: 14px 20px 8px; }
+.sheet-body { padding: 8px 20px 20px; }
+.sheet-foot { padding: 14px 20px 18px; }
+
+/* ---- header cluster ---- */
+.page-identity { gap: 6px; }
+.page-header .icon-btn-badge { top: 2px; inset-inline-end: 2px; }
+.bottom-nav { height: calc(var(--bottom-nav-h) + var(--safe-bottom)); }
+.toasts { bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 20px); }
+
+/* header actions collapse to round icon buttons on phones (label stays available to screen readers) */
+@media (max-width: 759px) {
+  .page-actions .btn:has(> svg) { width: 36px; height: 36px; min-height: 36px; padding: 0; border-radius: 50%; }
+  .page-actions .btn:has(> svg) > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .page-titles h1 { overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* covers inside cards are clipped by the card, so they stay square-cornered */
+.ccard-cover, .challenge-cover, .wcard-cover.in-card { border-radius: 0; }
+.ccard { border-radius: 16px; }
+.feat-title { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.85rem); line-height: 1.2; }
+.feat-sub { font-size: .8125rem; line-height: 1.5; }
+.feat-facts { font-size: .6875rem; }
+.ccard-title h3 { font-size: 1.1875rem; }
+.ccard-title p { font-size: .75rem; }
+.feat-cover { min-height: 220px; }

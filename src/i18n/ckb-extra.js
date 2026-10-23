@@ -1,4 +1,7 @@
 export default {
+  'Apple Health': 'Apple Health', 'Google Health Connect': 'Google Health Connect', '%': '%',
+  'Session time': 'کاتی دانیشتن',
+  'Set {0} of {1}': 'سێتی {0} لە {1}',
   'Cancel': 'پاشگەزبوونەوە',
   '{0} days': '{0} ڕۆژ',
   '{0} PRs': '{0} ڕیکۆرد',

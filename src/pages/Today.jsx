@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Clock, Dumbbell, Flame, Layers, Play, Sparkles, Trophy, Apple, BedDouble, Target } from 'lucide-react'
+import { ArrowRight, Clock, Dumbbell, Layers, Play, Sparkles, Trophy, Apple, BedDouble, Target } from 'lucide-react'
 import { useApp } from '../state/store'
-import { achievementList, courseProgress, insight, recommendations, streakDays, todaysSession, totals, weekPlan, weekStats } from '../state/selectors'
+import { achievementList, courseProgress, insight, recommendations, recoveryState, streakDays, todaysSession, totals, weekPlan, weekStats } from '../state/selectors'
 import { sessionPosition, sessionWeek, sessionWorkoutId } from '../data/courses'
-import { Badge, Button, Card, EmptyState, ProgressBar, Section, cx } from '../ui/primitives'
+import { Badge, Button, Card, EmptyState, PageHeader, ProgressBar, Section, cx } from '../ui/primitives'
 import { Sheet, useToast } from '../ui/overlays'
 import { Cover } from '../ui/art'
-import { AchievementCard, MetricCard, WeekStrip, WorkoutCard } from '../ui/domain'
-import { DAY_LONG, dateKey, greeting, weekKeys } from '../lib/dates'
-import { fmtCompact, fmtPct, toDisplay } from '../lib/format'
+import { AchievementCard, MetricCard, Rings, WeekStrip, WorkoutCard } from '../ui/domain'
+import { DAY_LONG, dateKey, greeting, longDate, weekKeys } from '../lib/dates'
+import { fmtCompact, fmtPct, pct, toDisplay } from '../lib/format'
 import { useStartWorkout } from '../lib/useStart'
 import { findWorkout } from '../state/selectors'
 import { comma, tr } from '../lib/i18n'
@@ -73,6 +73,12 @@ export function Today() {
     const idx = prog.next + i
     return { idx, workout: findWorkout(state, sessionWorkoutId(prog.course, idx)), week: sessionWeek(prog.course, idx) }
   }) : []
+  const ready = recoveryState(state)
+  const rings = [
+    { label: tr('Workouts'), value: pct(week.workouts, state.settings.weeklyTarget), color: 'var(--accent)' },
+    { label: tr('Volume'), value: prevWeek.volume ? pct(week.volume, prevWeek.volume) : 0, color: 'var(--success)' },
+    { label: tr('Minutes'), value: pct(week.minutes, state.settings.weeklyTarget * 60), color: 'var(--info)' },
+  ]
   const quick = recs[0]?.workout
   const goalCount = state.goals.length
   const pickDay = (d) => {
@@ -84,10 +90,7 @@ export function Today() {
   return (
     <div className="today">
       <div className="today-main stack-lg">
-        <header className="today-greet enter">
-          <div className="eyebrow">{greeting()}{comma} {state.user.name}</div>
-          <h1 className="display today-title">{tr("Your training is ready.")}</h1>
-        </header>
+        <PageHeader eyebrow={longDate(todayKey)} title={tr('Today')} subtitle={`${greeting()}${comma} ${state.user.name}`} />
 
         {session ? (
           <TodayHero session={session} plan={plan} onChoose={() => setChooser(true)} onChooseDay={(d) => pickDay(d)} onStart={() => start(session.workout, { courseId: session.course.id, sessionIndex: session.index })} />
@@ -116,18 +119,29 @@ export function Today() {
           </Card>
         </div>
 
-        <Section title={tr("Performance snapshot")} eyebrow={tr("This week")} action={<Link className="link caption" to="/progress">{tr("Full progress")}</Link>}>
-          <div className="grid-4">
-            <MetricCard label={tr("Workouts")} icon={Dumbbell} value={week.workouts} unit={`/ ${state.settings.weeklyTarget}`} hint={tr("this week")} to="/history" />
-            <MetricCard label={tr("Volume")} icon={Flame} value={fmtCompact(toDisplay(week.volume, unit))} unit={unit} delta={volDelta != null ? fmtPct(volDelta) : null} deltaTone={volDelta > 0 ? 'success' : 'danger'} hint={volDelta != null ? tr("vs last week") : tr("this week")} to="/progress?tab=volume" />
-            <MetricCard label={tr("Streak")} icon={Flame} value={streak} unit={tr("days")} hint={streak ? tr("on plan") : tr("start today")} to="/progress?tab=consistency" />
-            <MetricCard label={tr("PRs")} icon={Trophy} value={monthPrs} hint={tr("this month")} to="/progress?tab=prs" />
+        <Card className="activity enter enter-1">
+          <div className="activity-head"><span className="eyebrow">{tr("Weekly activity")}</span><Link className="link caption" to="/progress">{tr("Full progress")}</Link></div>
+          <div className="activity-body">
+            <Rings rings={rings} />
+            <ul className="activity-legend">
+              <li><i style={{ background: 'var(--accent)' }} /><span className="eyebrow">{tr("Workouts")}</span><b className="num">{week.workouts}<small> / {state.settings.weeklyTarget}</small></b></li>
+              <li><i style={{ background: 'var(--success)' }} /><span className="eyebrow">{tr("Volume")}</span><b className="num">{fmtCompact(toDisplay(week.volume, unit))}<small> {unit}</small></b></li>
+              <li><i style={{ background: 'var(--info)' }} /><span className="eyebrow">{tr("Minutes")}</span><b className="num">{Math.round(week.minutes)}<small> {tr("min")}</small></b></li>
+            </ul>
           </div>
-        </Section>
+          <WeekStrip keys={keys} days={week.days} todayKey={todayKey} />
+        </Card>
+
+        <div className="tiles enter enter-2">
+          <MetricCard label={tr("Streak")} value={streak} unit={tr("days")} hint={streak ? tr("on plan") : tr("start today")} to="/progress?tab=consistency" />
+          <MetricCard label={tr("PRs")} value={monthPrs} hint={tr("this month")} to="/progress?tab=prs" />
+          <MetricCard label={tr("Readiness")} value={ready.score} unit="/100" hint={tr(ready.label)} to="/recovery" />
+          <MetricCard label={tr("Volume")} value={fmtCompact(toDisplay(week.volume, unit))} unit={unit} delta={volDelta != null ? fmtPct(volDelta) : null} deltaTone={volDelta > 0 ? 'success' : 'danger'} hint={volDelta != null ? tr("vs last week") : tr("this week")} to="/progress?tab=volume" />
+        </div>
 
         {recs.length > 0 && (
           <Section title={tr("Recommended for you")} eyebrow={tr("Based on your last 7 days")}>
-            <div className="grid-auto recs">
+            <div className="scroll-x recs">
               {recs.map((r) => r.kind === 'workout' ? (
                 <div key={r.id} className="stack-sm"><WorkoutCard workout={r.workout} compact /><p className="caption rec-reason">{r.reason}</p></div>
               ) : (
@@ -148,11 +162,6 @@ export function Today() {
       </div>
 
       <aside className="today-side stack" aria-label={tr("Weekly overview")}>
-        <Card className="stack enter enter-2">
-          <div className="row between"><h3>{tr("Weekly activity")}</h3><span className="num caption">{week.workouts}/{state.settings.weeklyTarget}</span></div>
-          <WeekStrip keys={keys} days={week.days} todayKey={todayKey} />
-          <ProgressBar value={(week.workouts / state.settings.weeklyTarget) * 100} label={tr("Weekly target")} />
-        </Card>
         {upcoming.length > 0 && (
           <Card className="stack-sm enter enter-3">
             <h3>{tr("Upcoming schedule")}</h3>

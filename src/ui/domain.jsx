@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Award, Bookmark, Calendar, Check, ChevronRight, Clock, Dumbbell, Flame, Heart, Lock, Medal, Sparkles, Star, Trophy, Weight, Sparkle } from 'lucide-react'
+import { Award, Bookmark, Calendar, Check, ChevronRight, Dumbbell, Flame, Heart, Lock, Medal, Sparkles, Star, Trophy, Weight, Sparkle } from 'lucide-react'
 import { Badge, Avatar, Card, ProgressBar, cx } from './primitives'
 import { Cover, ExerciseThumb } from './art'
 import { DAY_LABELS, monthShort, shortDate } from '../lib/dates'
@@ -62,18 +62,15 @@ export function ChartCard({ title, question, right, children, className, foot })
 /* ---------- workouts ---------- */
 export function WorkoutCard({ workout, saved, onSave, compact }) {
   return (
-    <Link to={`/workouts/${workout.id}`} className={cx('card card-interactive wcard', compact && 'wcard-compact')}>
+    <Link to={`/workouts/${workout.id}`} className={cx('card-interactive wcard', compact && 'wcard-compact')}>
       <Cover hue={workout.hue} seed={workout.id.length + workout.exercises.length} className="wcard-cover">
-        <div className="wcard-top">
-          <Badge tone="glass">{tr(workout.categories[0])}</Badge>
-          {onSave && <SaveButton active={saved} onClick={onSave} label={workout.title} />}
+        <div className="wcard-top">{onSave ? <SaveButton active={saved} onClick={onSave} label={workout.title} /> : <span />}</div>
+        <div className="wcard-over">
+          <span className="wcard-kicker">{tr(workout.level)} · {tr(workout.categories[0])}</span>
+          <h3 className="wcard-title">{workout.title}</h3>
+          <span className="wcard-meta"><span>{workout.minutes} {tr('min')}</span><i aria-hidden="true" /><span>{workout.calories} {tr('kcal')}</span><i aria-hidden="true" /><span>{workout.exercises.length} {tr('exercises')}</span></span>
         </div>
-        <div className="wcard-meta"><span><Clock size={13} aria-hidden="true" /> {workout.minutes} {tr("min")}</span><span><Dumbbell size={13} aria-hidden="true" /> {workout.exercises.length}</span></div>
       </Cover>
-      <div className="wcard-body">
-        <h3 className="truncate">{workout.title}</h3>
-        <p className="caption truncate">{tr(workout.level)} · {workout.equipment.slice(0, 2).map((e) => tr(e)).join('، ')} · ~{workout.calories} {tr("kcal")}</p>
-      </div>
     </Link>
   )
 }
@@ -208,5 +205,24 @@ export function WeekStrip({ keys, days, todayKey }) {
         )
       })}
     </ol>
+  )
+}
+
+/* Concentric activity rings (weekly workouts / volume / minutes) */
+export function Rings({ rings, size = 132, stroke = 10 }) {
+  return (
+    <svg className="rings" width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={rings.map((r) => `${r.label}: ${Math.round(r.value)}%`).join(', ')}>
+      {rings.map((r, i) => {
+        const radius = size / 2 - stroke / 2 - i * (stroke + 4)
+        const c = 2 * Math.PI * radius
+        const v = Math.max(0, Math.min(100, r.value))
+        return (
+          <g key={r.label} transform={`rotate(-90 ${size / 2} ${size / 2})`}>
+            <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={r.color} strokeOpacity=".16" strokeWidth={stroke} />
+            <circle className="ring-arc" cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={r.color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c - (c * v) / 100} />
+          </g>
+        )
+      })}
+    </svg>
   )
 }
