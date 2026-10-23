@@ -174,7 +174,7 @@ export function Session() {
                 {prevText(set) ? <button type="button" className="prev-chip" onClick={() => patch({ weight: set.prev.weight, reps: set.prev.reps })} aria-label={`Use previous: ${prevText(set)}`}><span>Previous</span> <b className="num">{prevText(set)}</b> <em>Use</em></button> : <span className="caption">First time — set your baseline</span>}
               </div>
               {item.suggest && activeSet === item.sets.findIndex((s) => !s.done) && (
-                <button type="button" className="suggest" onClick={() => patch({ weight: item.suggest.weight })}><Trophy size={14} aria-hidden="true" /> <span>{item.suggest.reason}. Try <b>{toDisplay(item.suggest.weight, unit)} {unit}</b></span></button>
+                <button type="button" className="suggest" onClick={() => patch({ weight: item.suggest.weight })}><Trophy size={14} aria-hidden="true" /> <span>{tr('{0}. Try {1} {2}', tr(item.suggest.reason, item.suggest.reps), toDisplay(item.suggest.weight, unit), unit)}</span></button>
               )}
               <div className={cx('logger-fields', !showWeight && 'no-weight')}>
                 {showWeight && <NumField big label={ex.type === 'Bodyweight' ? 'Added weight' : 'Weight'} suffix={unit} value={toDisplay(set.weight, unit)} step={wStep} decimals={2} onChange={(v) => patch({ weight: toKg(v, unit) })} />}
@@ -253,16 +253,16 @@ export function Session() {
       <Sheet open={finish} onClose={() => setFinish(false)} title="Finish workout?" footer={<div className="stack-sm"><Button variant="primary" size="lg" block disabled={doneSets === 0} onClick={finishNow} data-autofocus>Finish & save</Button><Button block variant="ghost" onClick={() => setFinish(false)}>Keep training</Button></div>}>
         <div className="stack">
           <div className="grid-3 finish-stats"><div><div className="num num-lg">{doneSets}</div><span className="caption">sets done</span></div><div><div className="num num-lg">{a.exercises.filter((e) => e.sets.some((s) => s.done)).length}</div><span className="caption">exercises</span></div><div><div className="num num-lg">{Math.round((now - a.startedAt) / 60000)}</div><span className="caption">minutes</span></div></div>
-          {doneSets === 0 ? <p className="muted">Log at least one set to save this workout, or discard it.</p> : doneSets < totalSets ? <p className="muted">{totalSets - doneSets} planned sets are still open. Only completed sets are saved.</p> : <p className="muted">Everything is logged. Nice work.</p>}
+          {doneSets === 0 ? <p className="muted">Log at least one set to save this workout, or discard it.</p> : doneSets < totalSets ? <p className="muted">{tr('{0} planned sets are still open. Only completed sets are saved.', totalSets - doneSets)}</p> : <p className="muted">Everything is logged. Nice work.</p>}
         </div>
       </Sheet>
       <ConfirmSheet open={discard} onClose={() => setDiscard(false)} tone="danger" title="Discard this workout?" body="All sets logged in this session will be lost." confirmLabel="Discard" onConfirm={() => { actions.discard(); navigate('/today', { replace: true }) }} />
       <ExercisePicker open={picker} onClose={() => setPicker(false)} onPick={(e) => actions.addExercise(e.id)} />
       <Sheet open={tech} onClose={() => setTech(false)} title={ex.name} size="lg">
         <div className="stack">
-          <div className="row gap-4"><MuscleMap primary={[ex.muscle]} secondary={ex.secondary} view={bodyView(ex.muscle)} height={140} /><div className="stack-sm"><span className="eyebrow">Target</span><b>{ex.muscle}</b>{ex.secondary.length > 0 && <span className="caption">Also: {ex.secondary.join(', ')}</span>}<span className="caption">Tempo: {ex.tempo}</span></div></div>
+          <div className="row gap-4"><MuscleMap primary={[ex.muscle]} secondary={ex.secondary} view={bodyView(ex.muscle)} height={140} /><div className="stack-sm"><span className="eyebrow">Target</span><b>{tr(ex.muscle)}</b>{ex.secondary.length > 0 && <span className="caption">{tr('Also: {0}', ex.secondary.map((m) => tr(m)).join('، '))}</span>}<span className="caption">{tr('Tempo: {0}', ex.tempo)}</span></div></div>
           <ol className="steps">{ex.tech.map((t, i) => <li key={i}><span className="num">{i + 1}</span><p>{t}</p></li>)}</ol>
-          <p className="caption">Avoid: {ex.mistakes.join(' ')}</p>
+          <p className="caption">{tr('Avoid: {0}', ex.mistakes.join(' '))}</p>
         </div>
       </Sheet>
     </div>

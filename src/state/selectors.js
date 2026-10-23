@@ -1,16 +1,25 @@
 // Pure derivations over app state. Every number the UI shows about progress comes from here,
 // so a completed workout updates dashboards, goals, PRs, streaks and courses consistently.
 import { getExercise, MUSCLES } from '../data/exercises'
-import { courseMap, totalSessions, sessionWorkoutId, sessionWeek } from '../data/courses'
-import { getWorkout, workouts as libraryWorkouts } from '../data/workouts'
+import { courseMap, DAY_PATTERNS, totalSessions, sessionWorkoutId, sessionWeek } from '../data/courses'
+import { getWorkout, makeWorkout, workouts as libraryWorkouts } from '../data/workouts'
+import { L, tr } from '../lib/i18n'
 import { friends } from '../data/social'
 import { addDaysKey, dateKey, daysBetween, parseKey, weekKeys } from '../lib/dates'
 import { clamp, e1rm, pct } from '../lib/format'
 
 export const UPPER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps']
 export const LOWER = ['Quads', 'Hamstrings', 'Glutes']
-export const allWorkouts = (state) => [...libraryWorkouts, ...state.customWorkouts]
-export const findWorkout = (state, id) => getWorkout(id, state.customWorkouts)
+const remoteCache = new WeakMap()
+// Workouts that arrived through content sync, localised for the current language.
+export function remoteWorkouts(state) {
+  const list = state.remote?.workouts
+  if (!list?.length) return []
+  if (!remoteCache.has(list)) remoteCache.set(list, list.map((w) => makeWorkout([w.id, L(w.title), L(w.description), w.categories, w.goal, w.level, w.place, w.trainer, w.minutes, w.exercises], { remote: true })))
+  return remoteCache.get(list)
+}
+export const allWorkouts = (state) => [...libraryWorkouts, ...remoteWorkouts(state), ...state.customWorkouts]
+export const findWorkout = (state, id) => getWorkout(id, [...remoteWorkouts(state), ...state.customWorkouts])
 export const findExercise = (state, id) => getExercise(id, state.customExercises)
 export const countsVolume = (ex, set) => Boolean(ex) && ex.repLabel === 'reps' && Number(set.weight) > 0 && Number(set.reps) > 0
 export const setVolume = (ex, set) => (countsVolume(ex, set) ? Number(set.weight) * Number(set.reps) : 0)
@@ -148,32 +157,54 @@ export function courseProgress(state, courseId) {
   return { course, done, completed, total, next: next >= total ? null : next, week: next >= total ? course.weeks : sessionWeek(course, next), pct: pct(completed, total), finished: completed >= total, enrolled: state.enrolled.includes(courseId) }
 }
 
+// The current course week laid out on calendar days, e.g. Mon / Wed / Fri / Sat.
+export function weekPlan(state) {
+  const id = state.activeCourse
+  if (!id || !state.enrolled.includes(id)) return null
+  const p = courseProgress(state, id)
+  if (p.next == null) return null
+  const { course } = p
+  const base = (p.week - 1) * course.perWeek
+  const pattern = DAY_PATTERNS[course.perWeek] || Array.from({ length: course.perWeek }, (_, i) => i)
+  const keys = weekKeys()
+  const todayKey = today()
+  return pattern.map((dayIdx, i) => {
+    const index = base + i
+    return { dayIdx, key: keys[dayIdx], index, workout: findWorkout(state, sessionWorkoutId(course, index)), done: p.done.has(index), isToday: keys[dayIdx] === todayKey, past: keys[dayIdx] < todayKey }
+  })
+}
+
 export function todaysSession(state) {
   const id = state.activeCourse
   if (!id || !state.enrolled.includes(id)) return null
   const p = courseProgress(state, id)
   if (p.next == null) return null
-  const workout = findWorkout(state, sessionWorkoutId(p.course, p.next))
+  const pick = state.todayPick
+  const picked = pick && pick.date === today() && pick.courseId === id && !p.done.has(pick.index) && pick.index < p.total ? pick.index : null
+  const index = picked ?? p.next
+  const workout = findWorkout(state, sessionWorkoutId(p.course, index))
   const doneToday = state.history.some((l) => l.date === today() && l.courseId === id)
-  return { course: p.course, progress: p, index: p.next, workout, doneToday }
+  return { course: p.course, progress: p, index, workout, doneToday, picked: picked != null }
 }
 
 /* ---------- insights & recommendations ---------- */
 export function insight(state) {
-  const t = state.settings.weeklyTarget
+  const target = state.settings.weeklyTarget
   const now = weekStats(state, 0)
   const dayIdx = (new Date().getDay() + 6) % 7
   const prevThrough = weekStats(state, -1, dayIdx)
-  if (!state.history.length) return { tone: 'info', text: 'Complete your first workout to unlock personal insights.' }
-  if (now.workouts === t - 1) return { tone: 'progress', text: "You're one workout away from your weekly target." }
-  if (now.workouts >= t) return { tone: 'success', text: `Weekly target reached — ${now.workouts} of ${t} sessions done. Recovery is part of the plan.` }
+  if (!state.history.length) return { tone: 'info', text: tr('Complete your first workout to unlock personal insights.') }
+  if (now.workouts === target - 1) return { tone: 'progress', text: tr("You're one workout away from your weekly target.") }
+  if (now.workouts >= target) return { tone: 'success', text: tr('Weekly target reached — {0} of {1} sessions done. Recovery is part of the plan.', now.workouts, target) }
   if (now.volume > 0 && prevThrough.volume > 0) {
     const diff = ((now.volume - prevThrough.volume) / prevThrough.volume) * 100
-    if (Math.abs(diff) >= 3) return { tone: diff > 0 ? 'success' : 'info', text: `Your training volume is ${Math.abs(Math.round(diff))}% ${diff > 0 ? 'higher' : 'lower'} than last week at this point.` }
+    const n = Math.abs(Math.round(diff))
+    if (n >= 3) return { tone: diff > 0 ? 'success' : 'info', text: diff > 0 ? tr('Your training volume is {0}% higher than last week at this point.', n) : tr('Your training volume is {0}% lower than last week at this point.', n) }
   }
   const prs = weekStats(state, 0).prs
-  if (prs) return { tone: 'success', text: `${prs} new personal ${prs === 1 ? 'record' : 'records'} this week.` }
-  return { tone: 'info', text: `${t - now.workouts} ${t - now.workouts === 1 ? 'session' : 'sessions'} left to hit your weekly target.` }
+  if (prs) return { tone: 'success', text: prs === 1 ? tr('1 new personal record this week.') : tr('{0} new personal records this week.', prs) }
+  const left = target - now.workouts
+  return { tone: 'info', text: left === 1 ? tr('1 session left to hit your weekly target.') : tr('{0} sessions left to hit your weekly target.', left) }
 }
 
 export function recommendations(state) {
@@ -185,12 +216,12 @@ export function recommendations(state) {
   const level = state.user.level
   const fit = pool.filter((w) => w.level === level).concat(pool.filter((w) => w.level !== level))
   const items = []
-  if (lagging && fit[0]) items.push({ id: 'lag', kind: 'workout', workout: fit[0], reason: `${lagging[0]} has the fewest sets in the last 7 days (${lagging[1]}).` })
+  if (lagging && fit[0]) items.push({ id: 'lag', kind: 'workout', workout: fit[0], reason: tr('{0} has the fewest sets in the last 7 days ({1}).', tr(lagging[0]), lagging[1]) })
   const rec = recoveryState(state)
   const mob = libraryWorkouts.find((w) => w.id === (rec.score < 65 ? 'recovery-reset' : 'mobility-flow'))
-  items.push({ id: 'mob', kind: 'workout', workout: mob, reason: rec.score < 65 ? 'Readiness is moderate — an easy session keeps you moving.' : 'Mobility work supports your heavy lower days.' })
+  items.push({ id: 'mob', kind: 'workout', workout: mob, reason: rec.score < 65 ? tr('Readiness is moderate — an easy session keeps you moving.') : tr('Mobility work supports your heavy lower days.') })
   const notEnrolled = Object.values(courseMap).filter((c) => !state.enrolled.includes(c.id) && c.goal === state.user.goal)
-  if (notEnrolled[0]) items.push({ id: 'course', kind: 'course', course: notEnrolled[0], reason: `Matches your goal: ${state.user.goal.toLowerCase()}.` })
+  if (notEnrolled[0]) items.push({ id: 'course', kind: 'course', course: notEnrolled[0], reason: tr('Matches your goal: {0}.', tr(state.user.goal)) })
   return items
 }
 
@@ -209,12 +240,12 @@ export function recoveryState(state) {
   const loadPts = ratio <= 1 ? 35 : clamp(35 - (ratio - 1) * 70, 5, 35)
   const restPts = clamp(10 + since * 6, 10, 25)
   const score = Math.round(clamp(sleepPts + loadPts + restPts, 0, 100))
-  const label = score >= 75 ? 'High' : score >= 55 ? 'Moderate' : 'Low'
+  const label = score >= 75 ? 'High' : score >= 55 ? 'Moderate' : 'Low' // English keys; translated where displayed
   const advice = ratio > 1.15
-    ? 'Your training load has increased this week. Consider keeping today’s session at your normal intensity and prioritising sleep.'
+    ? tr('Your training load has increased this week. Consider keeping today’s session at your normal intensity and prioritising sleep.')
     : sleepAvg < 6.5
-      ? 'Sleep has been shorter than usual. A normal session is fine, but consider stopping sets 1–2 reps earlier.'
-      : 'Load and sleep look balanced. A good day to follow the plan and push the first working set.'
+      ? tr('Sleep has been shorter than usual. A normal session is fine, but consider stopping sets 1–2 reps earlier.')
+      : tr('Load and sleep look balanced. A good day to follow the plan and push the first working set.')
   return { score, label, sleepAvg, ratio, since, advice }
 }
 
@@ -227,18 +258,18 @@ export function muscleRecovery(state, muscle) {
 
 /* ---------- achievements ---------- */
 export function achievementList(state) {
-  const t = totals(state)
+  const tot = totals(state)
   const streak = streakDays(state)
   const weekStreak = weeklyTargetStreak(state)
   const week = weekStats(state, 0)
   const courseDone = Object.keys(courseMap).filter((id) => courseProgress(state, id).finished).length
   const recentPr = state.history.filter((l) => l.date >= addDaysKey(today(), -7)).reduce((n, l) => n + l.prs.length, 0)
   return [
-    { id: 'first-pr', title: 'First PR', description: 'Set your first personal record.', icon: 'trophy', value: t.prs, target: 1 },
-    { id: 'w10', title: '10 Workouts', description: 'Complete 10 workouts.', icon: 'dumbbell', value: t.workouts, target: 10 },
-    { id: 'w50', title: '50 Workouts', description: 'Complete 50 workouts.', icon: 'dumbbell', value: t.workouts, target: 50 },
-    { id: 'w100', title: '100 Workouts', description: 'Complete 100 workouts.', icon: 'dumbbell', value: t.workouts, target: 100 },
-    { id: 'v100k', title: '100K Volume', description: 'Lift 100,000 kg in total.', icon: 'weight', value: Math.round(t.volume), target: 100000 },
+    { id: 'first-pr', title: 'First PR', description: 'Set your first personal record.', icon: 'trophy', value: tot.prs, target: 1 },
+    { id: 'w10', title: '10 Workouts', description: 'Complete 10 workouts.', icon: 'dumbbell', value: tot.workouts, target: 10 },
+    { id: 'w50', title: '50 Workouts', description: 'Complete 50 workouts.', icon: 'dumbbell', value: tot.workouts, target: 50 },
+    { id: 'w100', title: '100 Workouts', description: 'Complete 100 workouts.', icon: 'dumbbell', value: tot.workouts, target: 100 },
+    { id: 'v100k', title: '100K Volume', description: 'Lift 100,000 kg in total.', icon: 'weight', value: Math.round(tot.volume), target: 100000 },
     { id: 'streak30', title: '30 Day Streak', description: 'Stay on plan for 30 days.', icon: 'flame', value: streak, target: 30 },
     { id: 'course', title: 'Course Complete', description: 'Finish every session in a course.', icon: 'medal', value: courseDone, target: 1 },
     { id: 'consistency', title: 'Consistency Master', description: 'Hit your weekly target 4 weeks in a row.', icon: 'calendar', value: weekStreak, target: 4 },
@@ -257,16 +288,16 @@ export function goalProgress(state, goal) {
   if (goal.type === 'strength') {
     const st = exerciseStats(state, goal.exerciseId)
     const cur = st.heaviest?.weight || 0
-    return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'kg', title: `${st.ex?.name || 'Lift'} · ${goal.target} kg`, label: `${cur} / ${goal.target} kg`, href: `/exercises/${goal.exerciseId}`, group: 'Strength' }
+    return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'kg', title: tr('{0} · {1} kg', st.ex?.name || tr('Lift'), goal.target), label: tr('{0} / {1} kg', cur, goal.target), href: `/exercises/${goal.exerciseId}`, group: 'Strength' }
   }
   if (goal.type === 'weekly') {
     const cur = weekStats(state, 0).workouts
-    return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'workouts', title: `Train ${goal.target}× per week`, label: `${cur} / ${goal.target} this week`, href: '/history', group: 'Consistency' }
+    return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'workouts', title: tr('Train {0}× per week', goal.target), label: tr('{0} / {1} this week', cur, goal.target), href: '/history', group: 'Consistency' }
   }
   if (goal.type === 'course') {
     const p = courseProgress(state, goal.courseId)
     const cur = Math.floor(p.completed / p.course.perWeek)
-    return { current: cur, target: p.course.weeks, pct: pct(p.completed, p.total), unit: 'weeks', title: `Complete ${p.course.title}`, label: `${cur} / ${p.course.weeks} weeks`, href: `/courses/${goal.courseId}`, group: 'Course' }
+    return { current: cur, target: p.course.weeks, pct: pct(p.completed, p.total), unit: 'weeks', title: tr('Complete {0}', p.course.title), label: tr('{0} / {1} weeks', cur, p.course.weeks), href: `/courses/${goal.courseId}`, group: 'Course' }
   }
   if (goal.type === 'body') {
     const metric = goal.metric || 'weight'
@@ -275,10 +306,11 @@ export function goalProgress(state, goal) {
     const start = entries[entries.length - 1]?.[metric] ?? cur
     const span = goal.target - start
     const p = span === 0 ? 100 : clamp(((cur - start) / span) * 100, 0, 100)
-    return { current: cur, target: goal.target, pct: p, unit: metric === 'bodyFat' ? '%' : 'kg', title: `${metric === 'bodyFat' ? 'Body fat' : 'Body weight'} · ${goal.target}${metric === 'bodyFat' ? '%' : ' kg'}`, label: `${cur} → ${goal.target}${metric === 'bodyFat' ? '%' : ' kg'}`, href: '/progress?tab=body', group: 'Body' }
+    const fat = metric === 'bodyFat'
+    return { current: cur, target: goal.target, pct: p, unit: fat ? '%' : 'kg', title: fat ? tr('Body fat · {0}%', goal.target) : tr('Body weight · {0} kg', goal.target), label: fat ? tr('{0}% → {1}%', cur, goal.target) : tr('{0} kg → {1} kg', cur, goal.target), href: '/progress?tab=body', group: 'Body' }
   }
   const cur = weekStats(state, 0).logs.filter((l) => l.categories.some((c) => c === 'Mobility' || c === 'Recovery')).length
-  return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'sessions', title: `${goal.target} mobility ${goal.target === 1 ? 'session' : 'sessions'} per week`, label: `${cur} / ${goal.target} this week`, href: '/workouts', group: 'Habit' }
+  return { current: cur, target: goal.target, pct: pct(cur, goal.target), unit: 'sessions', title: goal.target === 1 ? tr('1 mobility session per week') : tr('{0} mobility sessions per week', goal.target), label: tr('{0} / {1} this week', cur, goal.target), href: '/workouts', group: 'Habit' }
 }
 
 /* ---------- challenges & leaderboards ---------- */

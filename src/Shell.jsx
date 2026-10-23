@@ -1,12 +1,14 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Activity, Apple, Bell, BedDouble, CalendarDays, Dumbbell, Flag, Home, Layers, Moon, Play, Settings, Sparkles, Sun, Swords, Target, User, Users } from 'lucide-react'
+import { Activity, Apple, Bell, BedDouble, CalendarDays, Cloud, CloudOff, RefreshCw, Dumbbell, Flag, Home, Layers, Moon, Play, Settings, Sparkles, Sun, Swords, Target, User, Users } from 'lucide-react'
 import { useApp, useNow } from './state/store'
 import { unreadCount } from './state/selectors'
 import { IconButton, SearchField, cx } from './ui/primitives'
 import { PageSkeleton } from './ui/skeletons'
 import { ErrorBoundary } from './ui/ErrorBoundary'
 import { fmtClock } from './lib/format'
+import { usePwa } from './pwa'
+import { tr } from './lib/i18n'
 
 const nav = [
   { to: '/today', label: 'Today', icon: Home, match: ['/today'] },
@@ -74,6 +76,24 @@ function GlobalSearch() {
   )
 }
 
+function SyncButton() {
+  const { online, syncing, syncNow } = usePwa()
+  const Icon = !online ? CloudOff : syncing ? RefreshCw : Cloud
+  const label = !online ? tr('Offline — saved on this device') : syncing ? tr('Syncing…') : tr('Synced — tap to sync now')
+  return <IconButton label={label} icon={Icon} onClick={() => syncNow()} className={cx('sync-btn', syncing && 'is-spinning', !online && 'is-offline')} />
+}
+
+function StatusBanner() {
+  const { online, updateReady, applyUpdate } = usePwa()
+  if (online && !updateReady) return null
+  return (
+    <div className={cx('status-banner', !online ? 'is-offline' : 'is-update')} role="status">
+      {!online ? <><CloudOff size={16} aria-hidden="true" /><span>{tr('You’re offline. Everything still works — your changes are saved on this device and new content syncs when you reconnect.')}</span></>
+        : <><RefreshCw size={16} aria-hidden="true" /><span className="grow">{tr('A new version of Champion is ready.')}</span><button type="button" className="status-btn" onClick={applyUpdate}>{tr('Refresh')}</button></>}
+    </div>
+  )
+}
+
 function Logo({ compact }) {
   return (
     <Link to="/today" className="logo" aria-label="Champion — Today">
@@ -136,12 +156,14 @@ export default function Shell() {
             <GlobalSearch />
             <div className="grow" />
             <div className="row gap-1">
+              <SyncButton />
               <IconButton label={`Theme: ${theme}. Change theme`} icon={ThemeIcon} onClick={cycle} />
               <IconButton label="AI Coach" icon={Sparkles} to="/coach" className="show-mobile-flex" />
               <IconButton label={unread ? `Notifications, ${unread} unread` : 'Notifications'} icon={Bell} to="/notifications" badge={unread} />
             </div>
           </header>
         )}
+        {!immersive && <StatusBanner />}
         <main id="main" className={cx('content', immersive && 'content-immersive')} tabIndex={-1}>
           <ErrorBoundary resetKey={pathname}>
             <Suspense fallback={<PageSkeleton />}>

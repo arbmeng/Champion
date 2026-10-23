@@ -105,10 +105,10 @@ export function CourseDetail() {
       )}
 
       {p.finished && enrolled && (
-        <Card tone="accent" className="row gap-4 completion"><Award size={32} className="accent" aria-hidden="true" /><div><h3>Course complete</h3><p className="muted">You finished all {p.total} sessions of {course.title}. Review your progress, then choose your next program.</p></div><Button to="/progress" variant="primary" className="completion-cta">View progress</Button></Card>
+        <Card tone="accent" className="row gap-4 completion"><Award size={32} className="accent" aria-hidden="true" /><div><h3>Course complete</h3><p className="muted">{tr('You finished all {0} sessions of {1}. Review your progress, then choose your next program.', p.total, course.title)}</p></div><Button to="/progress" variant="primary" className="completion-cta">View progress</Button></Card>
       )}
 
-      <Section title="Weekly schedule" eyebrow={`Week ${week}${isDeloadWeek(course, week) ? ' · Deload' : ''}`}>
+      <Section title="Weekly schedule" eyebrow={isDeloadWeek(course, week) ? tr('Week {0} · Deload', week) : tr('Week {0}', week)}>
         <div className="week-picker" role="group" aria-label="Choose week">
           {Array.from({ length: course.weeks }, (_, i) => i + 1).map((w) => {
             const d = doneInWeek(w)
@@ -124,7 +124,7 @@ export function CourseDetail() {
               <li key={s.index} className={`session ${done ? 'is-done' : ''} ${current ? 'is-current' : ''} ${!done && !current ? 'is-future' : ''}`}>
                 <span className="session-state" aria-hidden="true">{done ? <Check size={18} strokeWidth={3} /> : current ? <Play size={14} fill="currentColor" /> : <Lock size={14} />}</span>
                 <div className="grow">
-                  <div className="eyebrow">Session {s.index % course.perWeek + 1}{current ? ' · Next up' : ''}</div>
+                  <div className="eyebrow">{current ? tr('Session {0} · Next up', s.index % course.perWeek + 1) : tr('Session {0}', s.index % course.perWeek + 1)}</div>
                   <Link to={done ? `/history/${s.log.id}` : `/workouts/${s.workout.id}`} className="session-title">{s.workout.title}</Link>
                   <div className="caption">{done ? `Completed ${shortDate(s.log.date)} · ${fmtVolume(s.log.volume, state.settings.unit)}` : `${s.workout.minutes} min · ${s.workout.exercises.length} exercises`}</div>
                 </div>

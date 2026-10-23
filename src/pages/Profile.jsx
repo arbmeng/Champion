@@ -28,7 +28,7 @@ export function Profile() {
         <div className="grow stack-sm">
           <h2>{state.user.name}</h2>
           <div className="row gap-2 wrap"><Badge tone="accent">{state.user.level}</Badge><Badge>{state.user.goal}</Badge><Badge>{state.user.frequency} days / week</Badge><Badge>{state.user.preferred}</Badge></div>
-          <span className="caption">Training since {shortDate(state.user.since)}{prog ? ` · ${prog.course.title}, week ${prog.week}` : ''}</span>
+          <span className="caption">{tr('Training since {0}', shortDate(state.user.since))}{prog ? ` · ${tr('{0}, week {1}', prog.course.title, prog.week)}` : ''}</span>
         </div>
       </Card>
 

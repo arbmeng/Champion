@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppProvider, useApp } from './state/store'
 import { ToastProvider } from './ui/overlays'
+import { PwaProvider } from './pwa'
 import Shell from './Shell'
 
 const page = (loader, name = 'default') => lazy(() => loader().then((m) => ({ default: m[name] })))
@@ -39,6 +40,7 @@ export default function App() {
   return (
     <AppProvider>
       <ToastProvider>
+        <PwaProvider>
         <HashRouter>
           <Routes>
             <Route element={<Shell />}>
@@ -70,6 +72,7 @@ export default function App() {
             </Route>
           </Routes>
         </HashRouter>
+        </PwaProvider>
       </ToastProvider>
     </AppProvider>
   )

@@ -29,13 +29,13 @@ export function Recovery() {
         <Card className="stack">
           <div className="row gap-6 wrap">
             <ProgressRing value={r.score} size={140} stroke={12} tone={tone === 'success' ? 'success' : 'accent'} label={`Recovery score ${r.score} out of 100`}><div><div className="num num-xl">{r.score}</div><div className="caption">{r.label}</div></div></ProgressRing>
-            <div className="grow stack-sm"><span className="eyebrow">Recovery recommendation</span><p className="rec-text">{r.advice}</p><div className="row gap-2 wrap"><Badge tone={tone}>Readiness: {r.label}</Badge><Badge>{r.since === 0 ? 'Trained today' : `${r.since}d since last session`}</Badge></div></div>
+            <div className="grow stack-sm"><span className="eyebrow">Recovery recommendation</span><p className="rec-text">{r.advice}</p><div className="row gap-2 wrap"><Badge tone={tone}>{tr('Readiness: {0}', tr(r.label))}</Badge><Badge>{r.since === 0 ? tr('Trained today') : tr('{0}d since last session', r.since)}</Badge></div></div>
           </div>
         </Card>
         <Card className="stack-sm">
           <h3>Rest days this week</h3>
           <WeekStrip keys={weekKeys()} days={week.days} todayKey={dateKey()} />
-          <p className="caption">{7 - week.workouts} days without a logged session. Planned rest is part of progress.</p>
+          <p className="caption">{tr('{0} days without a logged session. Planned rest is part of progress.', 7 - week.workouts)}</p>
         </Card>
       </div>
 

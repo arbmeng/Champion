@@ -1,27 +1,31 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Clock, Dumbbell, Flame, Layers, Play, Sparkles, Trophy, Apple, BedDouble, Target } from 'lucide-react'
 import { useApp } from '../state/store'
-import { achievementList, courseProgress, insight, recommendations, streakDays, todaysSession, totals, weekStats } from '../state/selectors'
+import { achievementList, courseProgress, insight, recommendations, streakDays, todaysSession, totals, weekPlan, weekStats } from '../state/selectors'
 import { sessionPosition, sessionWeek, sessionWorkoutId } from '../data/courses'
-import { Badge, Button, Card, EmptyState, ProgressBar, Section } from '../ui/primitives'
+import { Badge, Button, Card, EmptyState, ProgressBar, Section, cx } from '../ui/primitives'
+import { Sheet, useToast } from '../ui/overlays'
 import { Cover } from '../ui/art'
 import { AchievementCard, MetricCard, WeekStrip, WorkoutCard } from '../ui/domain'
-import { dateKey, greeting, weekKeys } from '../lib/dates'
+import { DAY_LONG, dateKey, greeting, weekKeys } from '../lib/dates'
 import { fmtCompact, fmtPct, toDisplay } from '../lib/format'
 import { useStartWorkout } from '../lib/useStart'
 import { findWorkout } from '../state/selectors'
 
-function TodayHero({ session, onStart }) {
+function TodayHero({ session, onStart, plan, onChoose, onChooseDay }) {
   const { state } = useApp()
   const { workout, course, index, doneToday } = session
   const a = state.active && state.active.workoutId === workout.id ? state.active : null
   const exDone = a ? a.exercises.filter((e) => e.sets.every((s) => s.done)).length : 0
   const total = workout.exercises.length
+  const isMonday = new Date().getDay() === 1
+  const wednesday = plan?.find((d) => d.dayIdx === 2 && !d.done)
   return (
     <Cover hue={workout.hue} variant={2} className="hero enter">
       <div className="hero-inner">
         <div className="stack-sm">
-          <div className="row gap-2 wrap"><Badge tone="glass">{doneToday ? 'Up next' : 'Today’s workout'}</Badge><span className="hero-course">{course.title} · Week {sessionWeek(course, index)} · Session {sessionPosition(course, index)}</span></div>
+          <div className="row gap-2 wrap"><Badge tone="glass">{doneToday ? 'Up next' : session.picked ? 'Your pick for today' : 'Today’s workout'}</Badge><span className="hero-course">{tr('{0} · Week {1} · Session {2}', course.title, sessionWeek(course, index), sessionPosition(course, index))}</span></div>
           <h2 className="hero-title">{workout.title}</h2>
           <div className="hero-meta"><span><Dumbbell size={15} aria-hidden="true" /> {total} exercises</span><span><Clock size={15} aria-hidden="true" /> {workout.minutes} min</span><span>{workout.level}</span></div>
         </div>
@@ -32,6 +36,12 @@ function TodayHero({ session, onStart }) {
             <Button variant="primary" size="xl" icon={Play} onClick={onStart} className="hero-cta">{a ? 'Resume workout' : doneToday ? 'Start next session' : 'Start workout'}</Button>
             <Button variant="glass" size="lg" to={`/workouts/${workout.id}`}>View workout</Button>
           </div>
+          {plan && (
+            <div className="row gap-2 wrap hero-choose">
+              {isMonday && wednesday && wednesday.index !== session.index && <Button variant="glass" size="sm" onClick={() => onChooseDay(wednesday)}>Choose Wednesday’s workout: {wednesday.workout.title}</Button>}
+              <Button variant="glass" size="sm" onClick={onChoose}>Choose another day</Button>
+            </div>
+          )}
         </div>
       </div>
     </Cover>
@@ -39,10 +49,13 @@ function TodayHero({ session, onStart }) {
 }
 
 export function Today() {
-  const { state } = useApp()
+  const { state, actions } = useApp()
+  const toast = useToast()
+  const [chooser, setChooser] = useState(false)
   const unit = state.settings.unit
   const start = useStartWorkout()
   const session = todaysSession(state)
+  const plan = weekPlan(state)
   const week = weekStats(state, 0)
   const prevWeek = weekStats(state, -1)
   const t = totals(state)
@@ -61,6 +74,11 @@ export function Today() {
   }) : []
   const quick = recs[0]?.workout
   const goalCount = state.goals.length
+  const pickDay = (d) => {
+    actions.pickToday({ courseId: state.activeCourse, index: d.index })
+    setChooser(false)
+    toast({ title: `${d.workout.title} is your workout for today`, body: `Planned for ${DAY_LONG[d.dayIdx]}.`, tone: 'success' })
+  }
 
   return (
     <div className="today">
@@ -71,7 +89,7 @@ export function Today() {
         </header>
 
         {session ? (
-          <TodayHero session={session} onStart={() => start(session.workout, { courseId: session.course.id, sessionIndex: session.index })} />
+          <TodayHero session={session} plan={plan} onChoose={() => setChooser(true)} onChooseDay={(d) => pickDay(d)} onStart={() => start(session.workout, { courseId: session.course.id, sessionIndex: session.index })} />
         ) : (
           <Card className="today-empty enter">
             <EmptyState icon={Layers} title={state.enrolled.length ? 'Course complete — nice work' : 'No course enrolled'} body={state.enrolled.length ? 'Pick your next challenge or train something from the library.' : 'Enroll in a course to get a structured weekly plan, or start a single workout from the library.'}
@@ -148,6 +166,24 @@ export function Today() {
         </Card>
         {t.workouts === 0 && <EmptyState icon={Dumbbell} title="No workouts yet" body="Your history will appear here after your first session." action={<Button variant="primary" to="/workouts">Browse workouts</Button>} />}
       </aside>
+
+      <Sheet open={chooser} onClose={() => setChooser(false)} title="Choose your workout" size="lg">
+        <div className="stack">
+          <p className="muted">This week’s plan. Pick any session to train today — the rest of the plan stays in order.</p>
+          <ul className="stack-sm">
+            {(plan || []).map((d) => (
+              <li key={d.index}>
+                <button type="button" className={cx('plan-row', d.done && 'is-done', session?.index === d.index && 'is-selected')} disabled={d.done} onClick={() => pickDay(d)}>
+                  <span className="plan-day"><b>{DAY_LONG[d.dayIdx]}</b><small>{d.isToday ? 'Today' : d.past ? 'Earlier' : 'Planned'}</small></span>
+                  <span className="grow"><b className="truncate plan-title">{d.workout.title}</b><span className="caption">{d.workout.minutes} min · {d.workout.exercises.length} exercises</span></span>
+                  {d.done ? <Badge tone="success">Done</Badge> : session?.index === d.index ? <Badge tone="accent">Selected</Badge> : <span className="link caption">Choose</span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+          {session?.picked && <Button variant="ghost" onClick={() => { actions.pickToday(null); setChooser(false) }}>Back to plan order</Button>}
+        </div>
+      </Sheet>
     </div>
   )
 }

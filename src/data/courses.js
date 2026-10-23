@@ -1,6 +1,8 @@
 // Courses are multi-week programs. A course session is addressed by its linear index:
 // sessionIndex = (week - 1) * perWeek + position.
-export const courses = [
+import { tr } from '../lib/i18n'
+
+const courseRows = [
   {
     id: 'strength-hypertrophy',
     title: 'Strength & Hypertrophy',
@@ -47,9 +49,18 @@ export const courses = [
   },
 ]
 
+export const courses = courseRows.map((c) => ({
+  ...c, title: tr(c.title), tagline: tr(c.tagline), description: tr(c.description),
+  trainer: { ...c.trainer, role: tr(c.trainer.role), bio: tr(c.trainer.bio) },
+  outcomes: c.outcomes.map(tr), tags: c.tags.map(tr),
+}))
+
 export const courseMap = Object.fromEntries(courses.map((c) => [c.id, c]))
 export const totalSessions = (course) => course.weeks * course.perWeek
 export const isDeloadWeek = (course, week) => course.weeks >= 8 && week % 4 === 0
 export const sessionWorkoutId = (course, index) => course.schedule[index % course.perWeek]
 export const sessionWeek = (course, index) => Math.floor(index / course.perWeek) + 1
 export const sessionPosition = (course, index) => (index % course.perWeek) + 1
+
+// Which weekdays (0 = Monday) each weekly frequency trains on.
+export const DAY_PATTERNS = { 1: [2], 2: [0, 3], 3: [0, 2, 4], 4: [0, 2, 4, 5], 5: [0, 1, 3, 4, 5], 6: [0, 1, 2, 3, 4, 5], 7: [0, 1, 2, 3, 4, 5, 6] }

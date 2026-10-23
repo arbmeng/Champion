@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Send, Sparkles, Trash2 } from 'lucide-react'
 import { useApp } from '../state/store'
 import { coachReply, SUGGESTIONS } from '../lib/coach'
+import { tr } from '../lib/i18n'
 import { Button, Card, IconButton, PageHeader, SectionTabs } from '../ui/primitives'
 import { ChatMessage } from '../ui/domain'
 import { useToast } from '../ui/overlays'
@@ -17,14 +18,14 @@ export function Coach() {
   const end = useRef(null)
   useEffect(() => { end.current?.scrollIntoView({ block: 'end' }) }, [state.coach.length, typing])
 
-  const send = (raw) => {
+  const send = (raw, intent) => {
     const q = raw.trim()
     if (!q || typing) return
     setText('')
     actions.coachAdd([{ id: `u${Date.now()}`, role: 'user', text: q }])
     setTyping(true)
     setTimeout(() => {
-      const r = coachReply(state, q)
+      const r = coachReply(state, q, intent) || { text: tr('I can analyse your strength trends, review your week, suggest load changes, explain an exercise, or build a quick workout. Try one of the suggestions below.') }
       actions.coachAdd([{ id: `c${Date.now()}`, role: 'coach', text: r.text, actions: r.actions }])
       setTyping(false)
     }, 450)
@@ -48,7 +49,7 @@ export function Coach() {
           {typing && <div className="chat-msg is-coach"><span className="chat-avatar"><Sparkles size={14} aria-hidden="true" /></span><div className="chat-bubble typing" aria-label="Coach is typing"><i /><i /><i /></div></div>}
           <div ref={end} />
         </div>
-        <div className="chat-suggest" aria-label="Suggested questions">{SUGGESTIONS.map((s) => <button key={s} type="button" className="chip" onClick={() => send(s)}>{s}</button>)}</div>
+        <div className="chat-suggest" aria-label="Suggested questions">{SUGGESTIONS.map((s) => <button key={s.id} type="button" className="chip" onClick={() => send(s.label(), s.id)}>{s.label()}</button>)}</div>
         <form className="chat-input" onSubmit={(e) => { e.preventDefault(); send(text) }}>
           <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask about your lifts, your week, or what to train" aria-label="Message your coach" />
           <Button type="submit" variant="primary" icon={Send} disabled={!text.trim() || typing} aria-label="Send" />

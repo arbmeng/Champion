@@ -193,7 +193,7 @@ function PRs({ state }) {
             <div className="row between"><span className="eyebrow">{s.ex.muscle}</span><Trophy size={15} className="accent" aria-hidden="true" /></div>
             <h3>{s.ex.name}</h3>
             <div className="num num-lg">{toDisplay(s.best.weight, unit)}<span className="unit">{unit} × {s.best.reps}</span></div>
-            <span className="caption">Set {shortDate(s.best.date)} · est. 1RM {toDisplay(s.e1rm, unit)} {unit}</span>
+            <span className="caption">{tr('Set {0} · est. 1RM {1} {2}', shortDate(s.best.date), toDisplay(s.e1rm, unit), unit)}</span>
           </Card>
         ))}
       </div>

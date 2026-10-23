@@ -6,6 +6,7 @@ import { e1rm, roundTo } from '../lib/format'
 import { buildCustomWorkout } from '../data/workouts'
 import { courseMap } from '../data/courses'
 import { foods } from '../data/social'
+import { L, tr } from '../lib/i18n'
 
 const AppContext = createContext(null)
 let uid = 0
@@ -16,7 +17,7 @@ function load() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const saved = JSON.parse(raw)
-      if (saved?.v === 1) return saved
+      if (saved?.v === 1) return { ...emptyState(), ...saved, settings: { ...emptyState().settings, ...saved.settings }, health: saved.health || emptyState().health }
     }
   } catch { /* storage unavailable — fall through to the demo profile */ }
   return createSeed()
@@ -36,7 +37,7 @@ export function makeActiveExercise(state, exerciseId, sets, reps, rest) {
   const prev = previousSets(state, exerciseId)
   const hitTop = prev.length > 0 && prev.every((s) => s.reps >= reps[1]) && ex.weighted
   const inc = (prev[0]?.weight || 0) >= 40 ? 2.5 : 1
-  const suggest = hitTop ? { weight: roundTo((prev[0].weight || 0) + inc, 0.5), reason: `You hit ${reps[1]} reps on every set last time` } : null
+  const suggest = hitTop ? { weight: roundTo((prev[0].weight || 0) + inc, 0.5), reason: 'You hit {0} reps on every set last time', reps: reps[1] } : null
   return {
     key: newId('ex'), exerciseId, rest: rest ?? ex.rest, reps,
     suggest,
@@ -79,9 +80,9 @@ function finishWorkout(state, now) {
   for (const x of unlockedNow) unlocked[x.id] = log.date
   const notes = []
   const ts = now
-  for (const pr of prs) notes.push({ id: newId('n'), type: 'pr', title: 'New PR', body: `${pr.name} · ${pr.weight} kg × ${pr.reps}`, ts, read: false, href: `/exercises/${pr.exerciseId}` })
-  for (const x of unlockedNow) notes.push({ id: newId('n'), type: 'achievement', title: 'Achievement unlocked', body: x.title, ts, read: false, href: '/profile' })
-  if (log.courseId) notes.push({ id: newId('n'), type: 'course', title: 'Course progress', body: `${courseMap[log.courseId].title} · session ${log.sessionIndex + 1} complete.`, ts, read: false, href: `/courses/${log.courseId}` })
+  for (const pr of prs) notes.push({ id: newId('n'), type: 'pr', title: tr('New PR'), body: tr('{0} · {1} kg × {2}', pr.name, pr.weight, pr.reps), ts, read: false, href: `/exercises/${pr.exerciseId}` })
+  for (const x of unlockedNow) notes.push({ id: newId('n'), type: 'achievement', title: tr('Achievement unlocked'), body: x.title, ts, read: false, href: '/profile' })
+  if (log.courseId) notes.push({ id: newId('n'), type: 'course', title: tr('Course progress'), body: tr('{0} · session {1} complete.', courseMap[log.courseId].title, log.sessionIndex + 1), ts, read: false, href: `/courses/${log.courseId}` })
   return { ...next, history: [log, ...state.history], unlocked, notifications: [...notes, ...state.notifications] }
 }
 
@@ -129,6 +130,21 @@ function reducer(state, action) {
     case 'favorite': return { ...state, favorites: { ...state.favorites, [action.kind]: toggle(state.favorites[action.kind], action.id) } }
     case 'enroll': return { ...state, enrolled: state.enrolled.includes(action.id) ? state.enrolled : [...state.enrolled, action.id], activeCourse: action.id }
     case 'leaveCourse': { const enrolled = state.enrolled.filter((c) => c !== action.id); return { ...state, enrolled, activeCourse: state.activeCourse === action.id ? enrolled[0] || null : state.activeCourse } }
+    case 'remote': {
+      const c = action.content
+      if (!c || typeof c.version !== 'number') return state
+      const prev = state.remote || {}
+      const isNew = c.version > (prev.version || 0)
+      const fresh = isNew ? (c.notifications || []).filter((n) => !(prev.notified || []).includes(n.id)) : []
+      return {
+        ...state,
+        remote: { version: isNew ? c.version : prev.version || 0, updated: isNew ? c.updated : prev.updated, lastSync: action.now, workouts: isNew ? c.workouts || [] : prev.workouts || [], feed: isNew ? c.feed || [] : prev.feed || [], notified: [...(prev.notified || []), ...fresh.map((n) => n.id)] },
+        notifications: [...fresh.map((n) => ({ id: `rn-${n.id}`, type: n.type, title: L(n.title), body: L(n.body), href: n.href, ts: action.now, read: false })), ...state.notifications],
+      }
+    }
+    case 'synced': return { ...state, remote: { ...(state.remote || {}), lastSync: action.now } }
+    case 'importData': return action.state
+    case 'pick': return { ...state, todayPick: action.pick }
     case 'activeCourse': return { ...state, activeCourse: action.id }
 
     case 'goalAdd': return { ...state, goals: [...state.goals, { ...action.goal, id: newId('g') }] }
@@ -228,6 +244,10 @@ export function AppProvider({ children }) {
     enroll: (id) => dispatch({ type: 'enroll', id }),
     leaveCourse: (id) => dispatch({ type: 'leaveCourse', id }),
     setActiveCourse: (id) => dispatch({ type: 'activeCourse', id }),
+    applyRemote: (content) => dispatch({ type: 'remote', content, now: Date.now() }),
+    markSynced: () => dispatch({ type: 'synced', now: Date.now() }),
+    importData: (data) => dispatch({ type: 'importData', state: { ...emptyState(), ...data, settings: { ...emptyState().settings, ...data.settings } } }),
+    pickToday: (pick) => dispatch({ type: 'pick', pick: pick && { ...pick, date: dateKey() } }),
     addGoal: (goal) => dispatch({ type: 'goalAdd', goal }),
     removeGoal: (id) => dispatch({ type: 'goalRemove', id }),
     joinChallenge: (id) => dispatch({ type: 'joinChallenge', id }),

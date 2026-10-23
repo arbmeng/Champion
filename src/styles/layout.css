@@ -58,3 +58,11 @@
   .toasts { left: calc(50% + var(--nav-w) / 2); }
 }
 @media (min-width: 1600px) { .shell { --content-max: 1360px; } }
+
+.status-banner { display: flex; align-items: center; gap: 10px; padding: 10px var(--page-pad); font-size: var(--fs-label); font-weight: 600; }
+.status-banner.is-offline { background: var(--warning-soft); color: var(--warning); }
+.status-banner.is-update { background: var(--accent-soft); color: var(--accent); }
+.status-btn { padding: 6px 14px; border: 0; border-radius: 99px; background: var(--accent); color: var(--on-accent); font-weight: 800; }
+.sync-btn.is-spinning svg { animation: spin 1s linear infinite; }
+.sync-btn.is-offline { color: var(--warning); }
+@keyframes spin { to { transform: rotate(360deg); } }

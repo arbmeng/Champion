@@ -1,4 +1,5 @@
 import { exerciseMap } from './exercises'
+import { tr } from '../lib/i18n'
 
 export const CATEGORIES = ['Strength', 'Hypertrophy', 'Power', 'HIIT', 'Cardio', 'Mobility', 'Recovery', 'Full Body', 'Upper', 'Lower', 'Push', 'Pull', 'Legs', 'Core']
 export const GOALS = ['Build muscle', 'Get stronger', 'Lose fat', 'Improve fitness', 'Improve endurance', 'Stay active']
@@ -54,13 +55,15 @@ const rows = [
 
 const perMinute = { HIIT: 11, Cardio: 9, Mobility: 3, Recovery: 3, Power: 6, default: 6 }
 
-export const workouts = rows.map(([id, title, description, categories, goal, level, place, trainer, minutes, items]) => {
+export function makeWorkout([id, title, description, categories, goal, level, place, trainer, minutes, items], extra = {}) {
   const list = items.map(([exerciseId, sets, lo, hi]) => ({ exerciseId, sets, reps: [lo, hi], rest: exerciseMap[exerciseId].rest }))
   const muscles = [...new Set(list.map((i) => exerciseMap[i.exerciseId].muscle))]
   const equipment = [...new Set(list.map((i) => exerciseMap[i.exerciseId].equipment))]
   const rate = perMinute[categories.find((c) => perMinute[c])] || perMinute.default
-  return { id, title, description, categories, goal, level, place, trainer, minutes, exercises: list, muscles, equipment, calories: Math.round(minutes * rate), hue: hueFor(id) }
-})
+  return { id, title, description, categories, goal, level, place, trainer, minutes, exercises: list, muscles, equipment, calories: Math.round(minutes * rate), hue: hueFor(id), ...extra }
+}
+
+export const workouts = rows.map((r) => makeWorkout([r[0], tr(r[1]), tr(r[2]), ...r.slice(3)]))
 
 function hueFor(id) {
   let h = 0

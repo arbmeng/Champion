@@ -1,10 +1,11 @@
 import { exerciseMap } from '../data/exercises'
-import { courseMap, sessionWorkoutId } from '../data/courses'
+import { courseMap, DAY_PATTERNS, sessionWorkoutId } from '../data/courses'
 import { workoutMap } from '../data/workouts'
 import { foods, nutritionTargets } from '../data/social'
 import { addDays, dateKey, startOfWeek } from '../lib/dates'
 import { e1rm, mulberry32, roundTo } from '../lib/format'
 import { achievementList } from './selectors'
+import { tr } from '../lib/i18n'
 
 export const STORAGE_KEY = 'champion.os.v1'
 
@@ -13,6 +14,8 @@ export const defaultSettings = { theme: 'system', unit: 'kg', autoRest: true, ha
 export const emptyState = () => ({
   v: 1,
   onboarded: false,
+  todayPick: null,
+  remote: { version: 0, updated: null, lastSync: null, workouts: [], feed: [], notified: [] },
   user: { name: 'Arez', level: 'Intermediate', goal: 'Build muscle', frequency: 4, equipment: 'Full gym', preferred: 'Hypertrophy', since: dateKey(addDays(new Date(), -120)) },
   settings: { ...defaultSettings },
   enrolled: [], activeCourse: null,
@@ -49,12 +52,12 @@ function buildHistory(rng, now) {
   let k = 0
   for (let d = new Date(courseStart); d < todayD; d = addDays(d, 1)) {
     const wd = (d.getDay() + 6) % 7
-    if (![0, 1, 3, 4].includes(wd)) continue
+    if (!DAY_PATTERNS[course.perWeek].includes(wd)) continue
     if (k >= course.weeks * course.perWeek) break
     plan.push({ date: new Date(d), workoutId: sessionWorkoutId(course, k), courseId: course.id, sessionIndex: k })
     k++
   }
-  for (const [off, id] of [[5, 'mobility-flow'], [19, 'hiit-circuit'], [26, 'mobility-flow']]) {
+  for (const [off, id] of [[1, 'mobility-flow'], [15, 'hiit-circuit'], [22, 'mobility-flow']]) {
     const d = addDays(courseStart, off)
     if (d < todayD) plan.push({ date: d, workoutId: id })
   }
@@ -109,6 +112,7 @@ export function createSeed(now = new Date()) {
   const t = new Date(now); t.setHours(0, 0, 0, 0)
   const key = (n) => dateKey(addDays(t, n))
   s.onboarded = false
+  s.todayPick = null
   s.enrolled = ['strength-hypertrophy']
   s.activeCourse = 'strength-hypertrophy'
   s.history = buildHistory(rng, now)
@@ -141,15 +145,15 @@ export function createSeed(now = new Date()) {
   const lastPr = s.history.find((l) => l.prs.length)?.prs[0]
   const mk = (id, type, title, body, minsAgo, href, read = false) => ({ id, type, title, body, ts: now.getTime() - minsAgo * 60000, read, href })
   s.notifications = [
-    mk('n1', 'workout', 'Workout reminder', 'Your next course session is ready. Start whenever you are.', 25, '/today'),
-    mk('n2', 'course', 'Course session ready', 'Strength & Hypertrophy · next session unlocked.', 90, '/courses/strength-hypertrophy'),
-    ...(lastPr ? [mk('n3', 'pr', 'New PR', `${lastPr.name} · ${lastPr.weight} kg × ${lastPr.reps}`, 60 * 30, '/progress?tab=prs')] : []),
-    mk('n4', 'goal', 'Goal progress', 'Your weekly training goal is on track.', 60 * 40, '/goals', true),
-    mk('n5', 'challenge', 'Challenge update', 'You are climbing the 30 Day Training Challenge board.', 60 * 52, '/challenges', true),
-    mk('n6', 'friend', 'Friend activity', 'Maya Chen completed Push Day · 8,420 kg.', 38, '/community'),
-    mk('n7', 'coach', 'AI coach', 'I reviewed your last week — tap for a short summary.', 60 * 60, '/coach', true),
+    mk('n1', 'workout', tr('Workout reminder'), tr('Your next course session is ready. Start whenever you are.'), 25, '/today'),
+    mk('n2', 'course', tr('Course session ready'), tr('Strength & Hypertrophy · next session unlocked.'), 90, '/courses/strength-hypertrophy'),
+    ...(lastPr ? [mk('n3', 'pr', tr('New PR'), tr('{0} · {1} kg × {2}', lastPr.name, lastPr.weight, lastPr.reps), 60 * 30, '/progress?tab=prs')] : []),
+    mk('n4', 'goal', tr('Goal progress'), tr('Your weekly training goal is on track.'), 60 * 40, '/goals', true),
+    mk('n5', 'challenge', tr('Challenge update'), tr('You are climbing the 30 Day Training Challenge board.'), 60 * 52, '/challenges', true),
+    mk('n6', 'friend', tr('Friend activity'), tr('Maya Chen completed Push Day · 8,420 kg.'), 38, '/community'),
+    mk('n7', 'coach', tr('AI Coach'), tr('I reviewed your last week — tap for a short summary.'), 60 * 60, '/coach', true),
   ]
-  s.coach = [{ id: 'c0', role: 'coach', text: `Hi ${s.user.name}. I can see ${s.history.length} logged sessions${last ? `, most recently ${last.title}` : ''}. Ask me about your lifts, your week, or what to train next.` }]
+  s.coach = [{ id: 'c0', role: 'coach', text: last ? tr('Hi {0}. I can see {1} logged sessions, most recently {2}. Ask me about your lifts, your week, or what to train next.', s.user.name, s.history.length, last.title) : tr('Hi {0}. Ask me about your lifts, your week, or what to train next.', s.user.name) }]
   s.recent = { exercises: ['bench', 'rdl', 'incline-machine'], searches: ['bench', 'squat'] }
   for (const a of achievementList(s)) if (a.unlocked) s.unlocked[a.id] = key(-Math.floor(rng() * 40))
   return s

@@ -136,7 +136,7 @@ export function WorkoutDetail() {
         <div className="stack">
           <Card className="stack"><h3>Target muscles</h3><div className="row gap-4"><MuscleMap primary={primary} view="both" height={150} /><ul className="stack-sm">{w.muscles.map((m) => <li key={m} className="row gap-2"><span className="dot" aria-hidden="true" />{m}</li>)}</ul></div></Card>
           <Card className="stack-sm"><h3>Equipment</h3><div className="row wrap gap-2">{w.equipment.map((e) => <Badge key={e}>{e}</Badge>)}</div></Card>
-          <Card className="stack-sm"><h3>Your history</h3>{last ? <p className="muted">Last done {shortDate(last.date)} · {Math.round(last.duration / 60)} min · {last.sets} sets.</p> : <p className="muted">You haven’t done this workout yet.</p>}</Card>
+          <Card className="stack-sm"><h3>Your history</h3>{last ? <p className="muted">{tr('Last done {0} · {1} min · {2} sets.', shortDate(last.date), Math.round(last.duration / 60), last.sets)}</p> : <p className="muted">You haven’t done this workout yet.</p>}</Card>
           {w.custom && <Button variant="danger" icon={Trash2} onClick={() => setDel(true)}>Delete workout</Button>}
         </div>
       </div>

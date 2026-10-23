@@ -62,7 +62,7 @@ export function Onboarding() {
           {step === 'target' && <div className="stack"><Input label="Workouts per week" inputMode="numeric" value={a.weekly} onChange={(e) => setA({ ...a, weekly: e.target.value })} /><Input label="Bench press target (kg)" inputMode="decimal" value={a.bench} onChange={(e) => setA({ ...a, bench: e.target.value })} hint="You can add or change goals any time." /></div>}
           {step === 'plan' && (
             <div className="stack">
-              <p className="muted">Based on your goal ({a.goal.toLowerCase()}), {a.level.toLowerCase()} experience, {a.frequency} days a week and {a.equipment.toLowerCase()} access.</p>
+              <p className="muted">{tr('Based on your goal ({0}), {1} experience, {2} days a week and {3} access.', tr(a.goal), tr(a.level), a.frequency, tr(a.equipment))}</p>
               <CourseCard course={rec} progress={courseProgress({ ...state, enrolled: [] }, rec.id)} featured />
             </div>
           )}

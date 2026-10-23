@@ -121,7 +121,7 @@ export function ExerciseDetail() {
               <MuscleMap primary={[ex.muscle]} secondary={ex.secondary} view="both" height={230} />
               <div className="demo-rom" aria-hidden="true"><span className="demo-rail" /><span className="demo-dot" style={{ animationDuration: `${ex.pattern === 'Mobility' ? 5 : 3}s` }} /></div>
             </div>
-            <div className="demo-caption caption"><b>Movement guide</b> · The dot shows the controlled path and tempo ({ex.tempo.split(' ')[0]}). Video demonstrations are not bundled in this prototype — follow the step-by-step technique below.</div>
+            <div className="demo-caption caption"><b>{tr('Movement guide')}</b> · {tr('The dot shows the controlled path and tempo ({0}). Video demonstrations are not bundled in this prototype — follow the step-by-step technique below.', ex.tempo.split(' ')[0])}</div>
           </Card>
 
           <Section title="Technique">
@@ -134,14 +134,14 @@ export function ExerciseDetail() {
             <Card className="stack-sm"><h3 className="row gap-2"><Dumbbell size={17} aria-hidden="true" /> Range of motion</h3><p className="muted">{ex.rom}</p></Card>
             <Card className="stack-sm"><h3 className="row gap-2"><Timer size={17} aria-hidden="true" /> Tempo</h3><p className="muted">{ex.tempo}</p></Card>
             <Card className="stack-sm"><h3 className="row gap-2"><Wind size={17} aria-hidden="true" /> Breathing</h3><p className="muted">{ex.breathing}</p></Card>
-            <Card className="stack-sm"><h3>Training notes</h3><p className="muted">{ex.tip}</p><p className="caption">Suggested: {ex.sets} sets × {ex.reps[0]}–{ex.reps[1]} {ex.repLabel}, rest {Math.round(ex.rest / 60 * 10) / 10} min.</p></Card>
+            <Card className="stack-sm"><h3>Training notes</h3><p className="muted">{ex.tip}</p><p className="caption">{tr('Suggested: {0} sets × {1}–{2} {3}, rest {4} min.', ex.sets, ex.reps[0], ex.reps[1], tr(ex.repLabel), Math.round(ex.rest / 60 * 10) / 10)}</p></Card>
           </div>
         </div>
 
         <div className="stack">
           <Card className="stack-sm">
             <h3>Target muscles</h3>
-            <div className="row gap-2 wrap"><Badge tone="accent">Primary · {ex.muscle}</Badge>{ex.secondary.map((m) => <Badge key={m}>Secondary · {m}</Badge>)}</div>
+            <div className="row gap-2 wrap"><Badge tone="accent">{tr('Primary · {0}', tr(ex.muscle))}</Badge>{ex.secondary.map((m) => <Badge key={m}>{tr('Secondary · {0}', tr(m))}</Badge>)}</div>
             <div className="row gap-2"><span className="caption">Equipment</span><Badge>{ex.equipment}</Badge><span className="caption">Pattern</span><Badge>{ex.pattern}</Badge></div>
           </Card>
 

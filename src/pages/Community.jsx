@@ -7,6 +7,7 @@ import { Avatar, Badge, Button, Card, EmptyState, PageHeader, SectionTabs, Segme
 import { LeaderboardRow } from '../ui/domain'
 import { communityTabs } from '../ui/sections'
 import { timeAgo } from '../lib/dates'
+import { L } from '../lib/i18n'
 import { fmtNum, toDisplay } from '../lib/format'
 
 function Post({ post }) {
@@ -56,7 +57,7 @@ export function Community() {
   const unit = state.settings.unit
   const mine = state.social.posts.map((p) => { const l = state.history.find((x) => x.id === p.logId); return l && { id: p.id, authorId: 'you', ts: p.ts, workout: l.title, duration: Math.round(l.duration / 60), volume: l.volume, exercises: l.exercises, text: p.text, pr: l.prs[0] ? `${l.prs[0].name} · ${toDisplay(l.prs[0].weight, unit)} ${unit} × ${l.prs[0].reps}` : null, likes: 0, comments: [] } }).filter(Boolean)
   const base = Date.now()
-  const feed = [...mine, ...feedSeed.filter((p) => state.social.following[p.authorId]).map((p) => ({ ...p, ts: base - p.ago * 60000 }))].sort((a, b) => b.ts - a.ts)
+  const feed = [...mine, ...[...(state.remote?.feed || []), ...feedSeed].filter((p) => state.social.following[p.authorId]).map((p) => ({ ...p, workout: L(p.workout), text: L(p.text), ts: base - p.ago * 60000 }))].sort((a, b) => b.ts - a.ts)
   const rows = leaderboard(state, cat, scope)
   const fmt = { workouts: (v) => `${v} workouts`, volume: (v) => `${fmtNum(toDisplay(v, unit))} ${unit}`, streak: (v) => `${v} days`, prs: (v) => `${v} PRs` }[cat]
   return (

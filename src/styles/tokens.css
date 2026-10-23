@@ -1,6 +1,6 @@
 /* ===== Champion design tokens ===== */
 :root {
-  --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font: 'Manrope', 'Noto Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
   --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* spacing (4px base) */
