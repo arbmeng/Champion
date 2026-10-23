@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createPortal } from 'react-dom'
 import { Check, Info, TriangleAlert, X } from 'lucide-react'
 import { Button, IconButton, cx } from './primitives'
+import { tr } from '../lib/i18n'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
@@ -42,7 +43,7 @@ export function Sheet({ open, onClose, title, children, footer, side = 'bottom',
         {title && (
           <div className="sheet-head">
             <h2>{title}</h2>
-            <IconButton label="Close" icon={X} size="sm" onClick={onClose} />
+            <IconButton label={tr("Close")} icon={X} size="sm" onClick={onClose} />
           </div>
         )}
         <div className="sheet-body">{children}</div>
@@ -82,7 +83,7 @@ export function ToastProvider({ children }) {
       <div className="toasts" role="status" aria-live="polite">
         {items.map((t) => {
           const I = Icon[t.tone] || Info
-          return <div key={t.id} className={`toast toast-${t.tone}`}><I size={16} aria-hidden="true" /><div className="grow"><b>{t.title}</b>{t.body && <span>{t.body}</span>}</div><button type="button" className="toast-x" aria-label="Dismiss" onClick={() => remove(t.id)}><X size={14} /></button></div>
+          return <div key={t.id} className={`toast toast-${t.tone}`}><I size={16} aria-hidden="true" /><div className="grow"><b>{t.title}</b>{t.body && <span>{t.body}</span>}</div><button type="button" className="toast-x" aria-label={tr("Dismiss")} onClick={() => remove(t.id)}><X size={14} /></button></div>
         })}
       </div>
     </ToastContext.Provider>

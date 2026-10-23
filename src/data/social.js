@@ -1,4 +1,6 @@
-export const friends = [
+import { tr } from '../lib/i18n'
+
+const friendRows = [
   { id: 'maya', name: 'Maya Chen', handle: '@mayalifts', level: 'Advanced', hue: 330, weekly: 5, volume: 31200, streak: 64, prs: 3, following: true },
   { id: 'jonas', name: 'Jonas Weber', handle: '@jonasw', level: 'Intermediate', hue: 210, weekly: 4, volume: 24800, streak: 41, prs: 2, following: true },
   { id: 'imani', name: 'Imani Brooks', handle: '@imanib', level: 'Intermediate', hue: 150, weekly: 4, volume: 22150, streak: 38, prs: 1, following: true },
@@ -7,14 +9,18 @@ export const friends = [
   { id: 'liam', name: 'Liam Doyle', handle: '@liamd', level: 'Intermediate', hue: 100, weekly: 3, volume: 17600, streak: 12, prs: 0, following: false },
 ]
 
-export const groups = [
+const groupRows = [
   { id: 'iron-club', name: 'Iron Club', members: 1284, description: 'Strength training, programming and form checks.', hue: 18 },
   { id: 'early-lifters', name: '6am Lifters', members: 642, description: 'Morning training accountability.', hue: 200 },
   { id: 'home-gym', name: 'Home Gym Builders', members: 903, description: 'Dumbbells, bands and small-space programming.', hue: 150 },
 ]
 
+export const friends = friendRows.map((f) => ({ ...f, name: tr(f.name) }))
+
+export const groups = groupRows.map((g) => ({ ...g, name: tr(g.name), description: tr(g.description) }))
+
 // Offsets are minutes before "now" so the feed always feels current.
-export const feedSeed = [
+const feedRows = [
   { id: 'p1', authorId: 'maya', ago: 38, workout: 'Push Day', duration: 68, volume: 8420, exercises: 7, text: 'Finally hit 5 strict pull-ups with +10 kg earlier this week — upper body feeling strong.', pr: 'Incline DB Press · 32 kg × 8', likes: 14, comments: [{ authorId: 'jonas', text: 'Huge. Nice work.' }] },
   { id: 'p2', authorId: 'jonas', ago: 190, workout: 'Lower B · Hinge Focus', duration: 72, volume: 11250, exercises: 5, text: 'RDLs finally feel smooth at 110.', likes: 9, comments: [] },
   { id: 'p3', authorId: 'imani', ago: 560, workout: 'Hips & Spine Mobility', duration: 20, volume: 0, exercises: 4, text: 'Recovery day done. Sleep has been better since adding this.', likes: 6, comments: [{ authorId: 'theo', text: 'Going to try this tomorrow.' }] },
@@ -22,7 +28,9 @@ export const feedSeed = [
   { id: 'p5', authorId: 'sofia', ago: 1740, workout: 'Leg Day', duration: 80, volume: 14980, exercises: 6, text: 'Squat day. Top set felt clean at RIR 1.', likes: 22, comments: [{ authorId: 'maya', text: 'Machine!' }] },
 ]
 
-export const challenges = [
+export const feedSeed = feedRows.map((p) => ({ ...p, workout: tr(p.workout), text: tr(p.text), pr: p.pr ? tr(p.pr) : p.pr }))
+
+const challengeRows = [
   { id: 'thirty-day', title: '30 Day Training Challenge', description: 'Complete 20 workouts inside 30 days. Consistency beats intensity.', kind: 'workouts', target: 20, unit: 'workouts', start: -12, end: 18, participants: 3412, badge: 'Consistency', hue: 18,
     board: [['Sofia Alvarez', 17], ['Maya Chen', 15], ['Jonas Weber', 11], ['Imani Brooks', 10], ['Theo Marchetti', 7]] },
   { id: 'bench-volume', title: 'Bench Press Challenge', description: 'Move 6,000 kg of bench press volume this month.', kind: 'exerciseVolume', exerciseId: 'bench', target: 6000, unit: 'kg', start: -10, end: 20, participants: 1186, badge: 'Press', hue: 210,
@@ -34,7 +42,9 @@ export const challenges = [
     board: [['Sofia Alvarez', 17], ['Arez', 14], ['Maya Chen', 14], ['Jonas Weber', 12], ['Imani Brooks', 12]] },
 ]
 
-export const foods = [
+export const challenges = challengeRows.map((c) => ({ ...c, title: tr(c.title), description: tr(c.description), badge: tr(c.badge), unit: c.unit }))
+
+const foodRows = [
   { id: 'oats', name: 'Rolled oats (60 g)', kcal: 228, p: 8, c: 41, f: 4 },
   { id: 'eggs', name: 'Eggs ×3', kcal: 234, p: 19, c: 2, f: 16 },
   { id: 'whey', name: 'Whey protein scoop', kcal: 120, p: 24, c: 3, f: 2 },
@@ -53,11 +63,15 @@ export const foods = [
   { id: 'tofu', name: 'Firm tofu (150 g)', kcal: 190, p: 20, c: 4, f: 11 },
 ]
 
+export const foods = foodRows.map((f) => ({ ...f, name: tr(f.name) }))
+
 export const nutritionTargets = { kcal: 2650, p: 170, c: 290, f: 75, water: 3000 }
 export const MEALS = ['breakfast', 'lunch', 'dinner', 'snack']
 
-export const devices = [
+const deviceRows = [
   { id: 'apple', name: 'Apple Health', description: 'Steps, workouts, heart rate and sleep.', metrics: ['Steps', 'Heart rate', 'Sleep'] },
   { id: 'gconnect', name: 'Google Health Connect', description: 'Activity, sleep and heart rate on Android.', metrics: ['Steps', 'Sleep', 'Activity'] },
   { id: 'watch', name: 'Smartwatch', description: 'Live heart rate, calories and recovery signals.', metrics: ['Heart rate', 'Calories', 'Activity'] },
 ]
+
+export const devices = deviceRows.map((d) => ({ ...d, name: tr(d.name), description: tr(d.description), metrics: d.metrics.map(tr) }))

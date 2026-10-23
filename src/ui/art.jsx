@@ -1,3 +1,4 @@
+import { tr } from '../lib/i18n'
 import { useId } from 'react'
 import { cx } from './primitives'
 
@@ -76,7 +77,7 @@ export function MuscleMap({ primary = [], secondary = [], view = 'both', height 
   const both = view === 'both'
   const w = both ? 220 : 100
   return (
-    <svg className={cx('muscle-map', className)} viewBox={`0 0 ${w} 204`} height={height} role="img" aria-label={label || `Target muscles: ${p.join(', ') || 'none'}`}>
+    <svg className={cx('muscle-map', className)} viewBox={`0 0 ${w} 204`} height={height} role="img" aria-label={label || tr('Target muscles: {0}', p.map((m) => tr(m)).join('، ') || tr('none'))}>
       {(both || view === 'front') && <Figure regions={FRONT} primary={p} secondary={secondary} />}
       {(both || view === 'back') && <Figure regions={BACK} primary={p} secondary={secondary} x={both ? 120 : 0} />}
     </svg>

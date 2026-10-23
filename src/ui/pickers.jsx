@@ -6,6 +6,7 @@ import { Button, FilterChips, Input, SearchField, Select } from './primitives'
 import { Sheet } from './overlays'
 import { ExerciseThumb } from './art'
 import { useToast } from './overlays'
+import { tr } from '../lib/i18n'
 
 export function useAllExercises() {
   const { state } = useApp()
@@ -21,7 +22,7 @@ export function searchExercises(list, q, filters = {}) {
     if (filters.pattern && e.pattern !== filters.pattern) return false
     if (filters.type && e.type !== filters.type) return false
     if (!term) return true
-    return `${e.name} ${e.muscle} ${e.equipment} ${e.pattern} ${e.secondary.join(' ')}`.toLowerCase().includes(term)
+    return `${e.name} ${tr(e.muscle)} ${tr(e.equipment)} ${tr(e.pattern)} ${e.secondary.join(' ')}`.toLowerCase().includes(term)
   })
 }
 
@@ -36,21 +37,21 @@ export function ExercisePicker({ open, onClose, onPick, title = 'Add exercise', 
     <>
       <Sheet open={open && !create} onClose={onClose} title={title} size="lg">
         <div className="stack">
-          <SearchField value={q} onChange={setQ} placeholder="Search exercises" autoFocus />
-          <FilterChips options={MUSCLES} value={muscle} onChange={setMuscle} label="Muscle" />
-          <ul className="picker-list" aria-label="Exercise results">
+          <SearchField value={q} onChange={setQ} placeholder={tr("Search exercises")} autoFocus />
+          <FilterChips options={MUSCLES} value={muscle} onChange={setMuscle} label={tr("Muscle")} />
+          <ul className="picker-list" aria-label={tr("Exercise results")}>
             {results.map((e) => (
               <li key={e.id}>
                 <button type="button" className="picker-row" onClick={() => pick(e)}>
                   <ExerciseThumb exercise={e} size={44} />
-                  <span className="grow"><b>{e.name}</b><span className="caption">{e.muscle} · {e.equipment}</span></span>
+                  <span className="grow"><b>{e.name}</b><span className="caption">{tr(e.muscle)} · {tr(e.equipment)}</span></span>
                   <Plus size={18} className="accent" aria-hidden="true" />
                 </button>
               </li>
             ))}
-            {!results.length && <li className="caption picker-empty">No exercises match “{q}”.</li>}
+            {!results.length && <li className="caption picker-empty">{tr("No exercises match “{0}”.", q)}</li>}
           </ul>
-          <Button icon={Plus} onClick={() => setCreate(true)}>Create custom exercise</Button>
+          <Button icon={Plus} onClick={() => setCreate(true)}>{tr("Create custom exercise")}</Button>
         </div>
       </Sheet>
       <CreateExerciseSheet open={create} onClose={() => setCreate(false)} defaultName={q} onCreated={(e) => { setCreate(false); pick(e) }} />
@@ -79,22 +80,22 @@ export function CreateExerciseSheet({ open, onClose, defaultName = '', onCreated
       tempo: '2-0-1', breathing: 'Exhale on effort, inhale on the return.', rom: 'Use the full range you can control.', safety: 'Choose a load you can control through the whole rep.',
     }
     actions.addExerciseDef(ex)
-    toast({ title: 'Exercise created', body: n, tone: 'success' })
+    toast({ title: tr("Exercise created"), body: n, tone: 'success' })
     setName(''); setErr('')
     onCreated?.(ex)
     onClose()
   }
   return (
-    <Sheet open={open} onClose={onClose} title="Create exercise">
+    <Sheet open={open} onClose={onClose} title={tr("Create exercise")}>
       <form className="stack" onSubmit={submit}>
-        <Input label="Name" value={name || defaultName} onChange={(e) => { setName(e.target.value); setErr('') }} error={err} placeholder="e.g. Single-arm cable press" data-autofocus />
+        <Input label={tr("Name")} value={name || defaultName} onChange={(e) => { setName(e.target.value); setErr('') }} error={err} placeholder={tr("e.g. Single-arm cable press")} data-autofocus />
         <div className="grid-2">
-          <Select label="Primary muscle" options={MUSCLES} value={muscle} onChange={setMuscle} />
-          <Select label="Equipment" options={EQUIPMENT} value={equipment} onChange={setEquipment} />
-          <Select label="Difficulty" options={DIFFICULTY} value={difficulty} onChange={setDifficulty} />
-          <Select label="Movement" options={PATTERNS.filter((p) => !['Mobility', 'Conditioning'].includes(p))} value={pattern} onChange={setPattern} />
+          <Select label={tr("Primary muscle")} options={MUSCLES} value={muscle} onChange={setMuscle} />
+          <Select label={tr("Equipment")} options={EQUIPMENT} value={equipment} onChange={setEquipment} />
+          <Select label={tr("Difficulty")} options={DIFFICULTY} value={difficulty} onChange={setDifficulty} />
+          <Select label={tr("Movement")} options={PATTERNS.filter((p) => !['Mobility', 'Conditioning'].includes(p))} value={pattern} onChange={setPattern} />
         </div>
-        <Button type="submit" variant="primary" size="lg" block>Create exercise</Button>
+        <Button type="submit" variant="primary" size="lg" block>{tr("Create exercise")}</Button>
       </form>
     </Sheet>
   )

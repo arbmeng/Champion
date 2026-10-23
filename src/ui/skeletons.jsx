@@ -1,4 +1,5 @@
 import { Card, Skeleton } from './primitives'
+import { tr } from '../lib/i18n'
 
 export function CardSkeleton({ lines = 3, h }) {
   return (
@@ -11,16 +12,16 @@ export function CardSkeleton({ lines = 3, h }) {
 
 export function PageSkeleton() {
   return (
-    <div className="stack" role="status" aria-label="Loading">
+    <div className="stack" role="status" aria-label={tr("Loading")}>
       <div className="stack-sm"><Skeleton h={12} w={90} /><Skeleton h={34} w="55%" /></div>
       <Skeleton h={220} r={16} />
       <div className="grid-4">{[0, 1, 2, 3].map((i) => <CardSkeleton key={i} lines={2} />)}</div>
       <div className="grid-2"><CardSkeleton h={160} /><CardSkeleton h={160} /></div>
-      <span className="sr-only">Loading…</span>
+      <span className="sr-only">{tr("Loading…")}</span>
     </div>
   )
 }
 
 export function ListSkeleton({ rows = 5 }) {
-  return <div className="stack-sm" role="status" aria-label="Loading">{Array.from({ length: rows }, (_, i) => <Skeleton key={i} h={64} r={14} />)}</div>
+  return <div className="stack-sm" role="status" aria-label={tr("Loading")}>{Array.from({ length: rows }, (_, i) => <Skeleton key={i} h={64} r={14} />)}</div>
 }

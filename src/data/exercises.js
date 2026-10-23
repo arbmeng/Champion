@@ -121,15 +121,17 @@ const knowledge = {
 
 const generic = ['Set up in a stable position and brace your core.', 'Move through the full range of motion under control.', 'Pause briefly at the point of peak contraction.', 'Return slowly to the start position.']
 
+import { tr } from '../lib/i18n'
+
 export const exercises = rows.map(([id, name, muscle, secondary, equipment, difficulty, pattern, type, sets, reps, rest, weight, repLabel = 'reps']) => {
   const k = knowledge[id] || {}
   return {
-    id, name, muscle, secondary, equipment, difficulty, pattern, type, sets, reps, rest, weight, repLabel,
+    id, name: tr(name), en: name, muscle, secondary, equipment, difficulty, pattern, type, sets, reps, rest, weight, repLabel,
     weighted: type !== 'Mobility' && type !== 'Conditioning' && type !== 'Cardio' && (weight > 0 || id === 'pullup'),
-    tech: k.tech || generic,
-    mistakes: k.mistakes || ['Rushing the movement.', 'Using momentum instead of muscle.'],
-    tip: k.tip || 'Use a load that leaves 1–3 reps in reserve on most working sets.',
-    ...patternDefaults[pattern],
+    tech: (k.tech || generic).map(tr),
+    mistakes: (k.mistakes || ['Rushing the movement.', 'Using momentum instead of muscle.']).map(tr),
+    tip: tr(k.tip || 'Use a load that leaves 1–3 reps in reserve on most working sets.'),
+    ...Object.fromEntries(Object.entries(patternDefaults[pattern]).map(([key, v]) => [key, tr(v)])),
   }
 })
 

@@ -2,6 +2,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, R
 import { useMemo } from 'react'
 import { cx } from './primitives'
 import { shortDate } from '../lib/dates'
+import { tr } from '../lib/i18n'
 
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 const axis = { stroke: 'var(--text-3)', fontSize: 11, tickLine: false, axisLine: false }
@@ -22,7 +23,7 @@ export function TrendChart({ data, x = 'date', y = 'value', unit = '', height = 
   const margin = { top: 8, right: 8, left: 0, bottom: 0 }
   const dom = useMemo(() => domain || ['auto', 'auto'], [domain])
   return (
-    <div className={cx('chart', className)} style={{ height }} role="img" aria-label={label || `Chart of ${y} over time`}>
+    <div className={cx('chart', className)} style={{ height }} role="img" aria-label={label || tr("Chart of {0} over time", tr(y))}>
       <ResponsiveContainer width="100%" height="100%">
         <Chart data={data} margin={margin}>
           <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="100%" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
@@ -44,7 +45,7 @@ export function TrendChart({ data, x = 'date', y = 'value', unit = '', height = 
 export function BarsChart({ data, x = 'label', y = 'value', unit = '', height = 200, highlightLast = true, className, valueFmt, label }) {
   const anim = !reduced()
   return (
-    <div className={cx('chart', className)} style={{ height }} role="img" aria-label={label || `Bar chart of ${y}`}>
+    <div className={cx('chart', className)} style={{ height }} role="img" aria-label={label || tr("Bar chart of {0}", tr(y))}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <CartesianGrid stroke="var(--line)" vertical={false} />
@@ -67,10 +68,10 @@ export function HBars({ rows, max, unit = 'sets', target }) {
     <ul className="hbars">
       {rows.map((r) => (
         <li key={r.label}>
-          <span className="hbar-label">{r.label}</span>
-          <span className="hbar-track" role="progressbar" aria-valuenow={r.value} aria-valuemin={0} aria-valuemax={top} aria-label={`${r.label}: ${r.value} ${unit}`}>
+          <span className="hbar-label">{tr(r.label)}</span>
+          <span className="hbar-track" role="progressbar" aria-valuenow={r.value} aria-valuemin={0} aria-valuemax={top} aria-label={`${tr(r.label)}: ${r.value} ${tr(unit)}`}>
             <span className="hbar-fill" style={{ width: `${(r.value / top) * 100}%` }} />
-            {target ? <span className="hbar-target" style={{ left: `${(target / top) * 100}%` }} /> : null}
+            {target ? <span className="hbar-target" style={{ insetInlineStart: `${(target / top) * 100}%` }} /> : null}
           </span>
           <span className="hbar-val num">{r.value}</span>
         </li>

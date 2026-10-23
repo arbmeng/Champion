@@ -6,6 +6,7 @@ import { courses } from '../data/courses'
 import { Button, Input, ProgressBar, cx } from '../ui/primitives'
 import { CourseCard } from '../ui/domain'
 import { courseProgress } from '../state/selectors'
+import { tr } from '../lib/i18n'
 
 const STEPS = ['goal', 'level', 'freq', 'equip', 'pref', 'target', 'plan']
 const EQUIP = ['Full gym', 'Home', 'Dumbbells', 'Bodyweight', 'Mixed']
@@ -19,7 +20,7 @@ function recommend(a) {
 }
 
 function Choice({ options, value, onChange, cols = 2, label }) {
-  return <div className="choices" role="radiogroup" aria-label={label} style={{ '--cols': cols }}>{options.map((o) => <button key={o} type="button" role="radio" aria-checked={value === o} className={cx('choice', value === o && 'is-active')} onClick={() => onChange(o)}>{o}{value === o && <Check size={16} aria-hidden="true" />}</button>)}</div>
+  return <div className="choices" role="radiogroup" aria-label={label} style={{ '--cols': cols }}>{options.map((o) => <button key={o} type="button" role="radio" aria-checked={value === o} className={cx('choice', value === o && 'is-active')} onClick={() => onChange(o)}>{tr(o)}{value === o && <Check size={16} aria-hidden="true" />}</button>)}</div>
 }
 
 export function Onboarding() {
@@ -46,29 +47,29 @@ export function Onboarding() {
     <div className="onb">
       <div className="onb-inner">
         <header className="onb-head">
-          {i > 0 ? <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => setI(i - 1)}>Back</Button> : <span />}
-          <span className="caption">Step {i + 1} of {STEPS.length}</span>
-          <button type="button" className="link caption" onClick={skip}>Skip, use demo profile</button>
+          {i > 0 ? <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => setI(i - 1)}>{tr("Back")}</Button> : <span />}
+          <span className="caption">{tr("Step {0} of {1}", i + 1, STEPS.length)}</span>
+          <button type="button" className="link caption" onClick={skip}>{tr("Skip, use demo profile")}</button>
         </header>
-        <ProgressBar value={((i + 1) / STEPS.length) * 100} height={4} label="Onboarding progress" />
+        <ProgressBar value={((i + 1) / STEPS.length) * 100} height={4} label={tr("Onboarding progress")} />
         <div key={step} className="onb-body enter">
-          <div className="eyebrow">Welcome to Champion</div>
+          <div className="eyebrow">{tr("Welcome to Champion")}</div>
           <h1>{titles[step]}</h1>
-          {step === 'goal' && <Choice label="Main goal" options={['Build muscle', 'Get stronger', 'Lose fat', 'Improve fitness', 'Improve endurance', 'Stay active']} value={a.goal} onChange={(v) => setA({ ...a, goal: v })} />}
-          {step === 'level' && <Choice label="Experience" cols={1} options={['Beginner', 'Intermediate', 'Advanced']} value={a.level} onChange={(v) => setA({ ...a, level: v })} />}
-          {step === 'freq' && <Choice label="Days per week" cols={5} options={['2', '3', '4', '5', '6']} value={String(a.frequency)} onChange={(v) => setA({ ...a, frequency: Number(v), weekly: v })} />}
-          {step === 'equip' && <Choice label="Equipment" options={EQUIP} value={a.equipment} onChange={(v) => setA({ ...a, equipment: v })} />}
-          {step === 'pref' && <Choice label="Preferred training" options={['Strength', 'Hypertrophy', 'Cardio', 'Mixed']} value={a.preferred} onChange={(v) => setA({ ...a, preferred: v })} />}
-          {step === 'target' && <div className="stack"><Input label="Workouts per week" inputMode="numeric" value={a.weekly} onChange={(e) => setA({ ...a, weekly: e.target.value })} /><Input label="Bench press target (kg)" inputMode="decimal" value={a.bench} onChange={(e) => setA({ ...a, bench: e.target.value })} hint="You can add or change goals any time." /></div>}
+          {step === 'goal' && <Choice label={tr("Main goal")} options={['Build muscle', 'Get stronger', 'Lose fat', 'Improve fitness', 'Improve endurance', 'Stay active']} value={a.goal} onChange={(v) => setA({ ...a, goal: v })} />}
+          {step === 'level' && <Choice label={tr("Experience")} cols={1} options={['Beginner', 'Intermediate', 'Advanced']} value={a.level} onChange={(v) => setA({ ...a, level: v })} />}
+          {step === 'freq' && <Choice label={tr("Days per week")} cols={5} options={['2', '3', '4', '5', '6']} value={String(a.frequency)} onChange={(v) => setA({ ...a, frequency: Number(v), weekly: v })} />}
+          {step === 'equip' && <Choice label={tr("Equipment")} options={EQUIP} value={a.equipment} onChange={(v) => setA({ ...a, equipment: v })} />}
+          {step === 'pref' && <Choice label={tr("Preferred training")} options={['Strength', 'Hypertrophy', 'Cardio', 'Mixed']} value={a.preferred} onChange={(v) => setA({ ...a, preferred: v })} />}
+          {step === 'target' && <div className="stack"><Input label={tr("Workouts per week")} inputMode="numeric" value={a.weekly} onChange={(e) => setA({ ...a, weekly: e.target.value })} /><Input label={tr("Bench press target (kg)")} inputMode="decimal" value={a.bench} onChange={(e) => setA({ ...a, bench: e.target.value })} hint={tr("You can add or change goals any time.")} /></div>}
           {step === 'plan' && (
             <div className="stack">
-              <p className="muted">Based on your goal ({a.goal.toLowerCase()}), {a.level.toLowerCase()} experience, {a.frequency} days a week and {a.equipment.toLowerCase()} access.</p>
+              <p className="muted">{tr('Based on your goal ({0}), {1} experience, {2} days a week and {3} access.', tr(a.goal), tr(a.level), a.frequency, tr(a.equipment))}</p>
               <CourseCard course={rec} progress={courseProgress({ ...state, enrolled: [] }, rec.id)} featured />
             </div>
           )}
         </div>
         <footer className="onb-foot">
-          {step !== 'plan' ? <Button variant="primary" size="xl" block onClick={() => setI(i + 1)}>Continue</Button> : (<><Button variant="primary" size="xl" block onClick={() => finish(true)}>Start this plan</Button><Button block variant="ghost" onClick={() => finish(false)}>Enter dashboard without enrolling</Button></>)}
+          {step !== 'plan' ? <Button variant="primary" size="xl" block onClick={() => setI(i + 1)}>{tr("Continue")}</Button> : (<><Button variant="primary" size="xl" block onClick={() => finish(true)}>{tr("Start this plan")}</Button><Button block variant="ghost" onClick={() => finish(false)}>{tr("Enter dashboard without enrolling")}</Button></>)}
         </footer>
       </div>
     </div>
