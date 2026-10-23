@@ -7,7 +7,8 @@ const LEGACY_KEY = 'champion.demo.v1'
 const muscleByExercise = new Map(library.map((exercise) => [exercise.id, exercise.muscle]))
 
 function normalizeState(saved, defaultState) {
-  const history = Array.isArray(saved?.history) ? saved.history : defaultState.history
+  // drop the old demo sessions that earlier versions seeded into saved profiles
+  const history = (Array.isArray(saved?.history) ? saved.history : defaultState.history).filter((workout) => !String(workout.id).startsWith('seed-'))
   return {
     ...defaultState,
     ...saved,

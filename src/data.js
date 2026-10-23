@@ -21,12 +21,7 @@ export const library = [
   { id: 'plank', name: 'Front Plank', muscle: 'Core', type: 'Bodyweight', sets: 3, reps: '30–45 sec', rest: 60, weight: 0 },
 ]
 
-export const starterHistory = [
-  { id: 'seed-1', title: 'Upper A', date: '2026-09-24', duration: 3090, volume: 4620, sets: 18, exercises: 6, muscles: ['Chest', 'Back', 'Shoulders', 'Arms'], prs: [],
-    entries: [{ exerciseId: 'bench', name: 'Barbell Bench Press', sets: [{ weight: 77.5, reps: 8 }, { weight: 77.5, reps: 8 }, { weight: 77.5, reps: 7 }] }] },
-  { id: 'seed-2', title: 'Lower A', date: '2026-09-22', duration: 3420, volume: 7380, sets: 18, exercises: 6, muscles: ['Legs', 'Glutes', 'Core'], prs: [], entries: [] },
-  { id: 'seed-3', title: 'Upper B', date: '2026-09-20', duration: 3180, volume: 4980, sets: 18, exercises: 6, muscles: ['Chest', 'Back', 'Shoulders', 'Arms'], prs: [], entries: [] },
-]
+export const starterHistory = []
 
 export const formatDuration = (seconds) => {
   const mins = Math.floor(seconds / 60)

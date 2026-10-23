@@ -86,7 +86,7 @@ function HomePage({ champion, onStart, onResume, onNavigate }) {
   const hasActiveWorkout = Boolean(champion.active)
   const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
   const recent = champion.history[0]
-  const daysSinceTraining = recent ? Math.max(0, Math.floor((new Date(`${localDateKey()}T00:00:00`) - new Date(`${recent.date}T00:00:00`)) / 86400000)) : 0
+  const daysSinceTraining = recent ? Math.max(0, Math.floor((new Date(`${localDateKey()}T00:00:00`) - new Date(`${recent.date}T00:00:00`)) / 86400000)) : 7
   const readinessScore = Math.min(95, 58 + daysSinceTraining * 8)
   const readinessLabel = daysSinceTraining >= 3 ? 'READY' : daysSinceTraining >= 2 ? 'MODERATE' : 'RECOVERING'
   const readinessMessage = readinessLabel === 'READY' ? "You're ready to go." : readinessLabel === 'MODERATE' ? 'Ease into today.' : 'You trained recently.'
