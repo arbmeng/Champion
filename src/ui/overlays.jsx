@@ -56,7 +56,7 @@ export function Sheet({ open, onClose, title, children, footer, side = 'bottom',
 export const Modal = (props) => <Sheet size="sm" {...props} />
 export const Drawer = (props) => <Sheet side="right" {...props} />
 
-export function ConfirmSheet({ open, onClose, onConfirm, title, body, confirmLabel = 'Confirm', tone = 'primary', cancelLabel = 'Cancel' }) {
+export function ConfirmSheet({ open, onClose, onConfirm, title, body, confirmLabel = 'Confirm', tone = 'primary', cancelLabel = tr('Cancel') }) {
   return (
     <Modal open={open} onClose={onClose} title={title} footer={<div className="row gap-2"><Button block onClick={onClose}>{cancelLabel}</Button><Button block variant={tone === 'danger' ? 'danger' : 'primary'} onClick={() => { onConfirm(); onClose() }} data-autofocus>{confirmLabel}</Button></div>}>
       <p className="muted">{body}</p>

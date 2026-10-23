@@ -60,7 +60,7 @@ export function Community() {
   const base = Date.now()
   const feed = [...mine, ...[...(state.remote?.feed || []), ...feedSeed].filter((p) => state.social.following[p.authorId]).map((p) => ({ ...p, workout: L(p.workout), text: L(p.text), ts: base - p.ago * 60000 }))].sort((a, b) => b.ts - a.ts)
   const rows = leaderboard(state, cat, scope)
-  const fmt = { workouts: (v) => `${v} workouts`, volume: (v) => `${fmtNum(toDisplay(v, unit))} ${unit}`, streak: (v) => `${v} days`, prs: (v) => `${v} PRs` }[cat]
+  const fmt = { workouts: (v) => tr('{0} workouts', v), volume: (v) => `${fmtNum(toDisplay(v, unit))} ${unit}`, streak: (v) => tr('{0} days', v), prs: (v) => tr('{0} PRs', v) }[cat]
   return (
     <div className="stack-lg">
       <PageHeader eyebrow={tr("Training together")} title={tr("Community")} subtitle={tr("Fitness activity first. Celebrate each other’s work.")} />
