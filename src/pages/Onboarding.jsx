@@ -42,7 +42,7 @@ export function Onboarding() {
     navigate('/today', { replace: true })
   }
   const skip = () => { actions.finishOnboarding(); navigate('/today', { replace: true }) }
-  const titles = { goal: 'What’s your main goal?', level: 'How experienced are you?', freq: 'How often can you train?', equip: 'What equipment do you have?', pref: 'What do you like to train?', target: 'Set your first goals', plan: 'Your recommended plan' }
+  const titles = { goal: tr('What’s your main goal?'), level: tr('How experienced are you?'), freq: tr('How often can you train?'), equip: tr('What equipment do you have?'), pref: tr('What do you like to train?'), target: tr('Set your first goals'), plan: tr('Your recommended plan') }
   return (
     <div className="onb">
       <div className="onb-inner">

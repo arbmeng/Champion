@@ -1,27 +1,206 @@
 {
-  "version": 1,
-  "updated": "2026-10-23",
+  "version": 2,
+  "updated": "2026-10-24",
   "workouts": [
     {
       "id": "glute-ham",
-      "title": { "en": "Glutes & Hamstrings Builder", "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران" },
-      "description": { "en": "Hinge-heavy lower-body session that targets glutes and hamstrings with heavy thrusts and controlled curls.", "ckb": "ڕاهێنانێکی بەشی خوارەوەی جەستە کە ڕین و ماسولکەی پشتەوەی ران بەهێز دەکات بە هیپ-سڕەست و چەمانەوەی کۆنتڕۆڵکراو." },
-      "categories": ["Hypertrophy", "Lower", "Legs"], "goal": "Build muscle", "level": "Intermediate", "place": "Gym", "trainer": "Kenji Mori", "minutes": 58,
-      "exercises": [["hip-thrust", 4, 8, 12], ["rdl", 3, 8, 10], ["leg-curl", 3, 10, 12], ["split-squat", 3, 8, 10], ["glute-bridge", 2, 12, 20]]
+      "title": {
+        "en": "Glutes & Hamstrings Builder",
+        "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران"
+      },
+      "description": {
+        "en": "Hinge-heavy lower-body session that targets glutes and hamstrings with heavy thrusts and controlled curls.",
+        "ckb": "ڕاهێنانێکی بەشی خوارەوەی جەستە کە ڕین و ماسولکەی پشتەوەی ران بەهێز دەکات بە هیپ-سڕەست و چەمانەوەی کۆنتڕۆڵکراو."
+      },
+      "categories": [
+        "Hypertrophy",
+        "Lower",
+        "Legs"
+      ],
+      "goal": "Build muscle",
+      "level": "Intermediate",
+      "place": "Gym",
+      "trainer": "Kenji Mori",
+      "minutes": 58,
+      "exercises": [
+        [
+          "hip-thrust",
+          4,
+          8,
+          12
+        ],
+        [
+          "rdl",
+          3,
+          8,
+          10
+        ],
+        [
+          "leg-curl",
+          3,
+          10,
+          12
+        ],
+        [
+          "split-squat",
+          3,
+          8,
+          10
+        ],
+        [
+          "glute-bridge",
+          2,
+          12,
+          20
+        ]
+      ]
     },
     {
       "id": "shoulders-arms",
-      "title": { "en": "Shoulders & Arms Finisher", "ckb": "تەواوکەری شان و قۆڵ" },
-      "description": { "en": "A short, high-quality session for rounded shoulders and arm size. Great as an add-on after a heavy pressing day.", "ckb": "ڕاهێنانێکی کورت و بەکوالیتی بۆ شانی خڕ و گەورەکردنی قۆڵ. بۆ زیادکردن دوای ڕۆژێکی قورسی پڕێس زۆر باشە." },
-      "categories": ["Hypertrophy", "Upper", "Push"], "goal": "Build muscle", "level": "Beginner", "place": "Gym", "trainer": "Dana Ortiz", "minutes": 40,
-      "exercises": [["db-lateral", 4, 12, 15], ["rear-delt", 3, 12, 15], ["hammer", 3, 10, 12], ["pressdown", 3, 10, 12], ["cable-curl", 2, 10, 15]]
+      "title": {
+        "en": "Shoulders & Arms Finisher",
+        "ckb": "تەواوکەری شان و قۆڵ"
+      },
+      "description": {
+        "en": "A short, high-quality session for rounded shoulders and arm size. Great as an add-on after a heavy pressing day.",
+        "ckb": "ڕاهێنانێکی کورت و بەکوالیتی بۆ شانی خڕ و گەورەکردنی قۆڵ. بۆ زیادکردن دوای ڕۆژێکی قورسی پڕێس زۆر باشە."
+      },
+      "categories": [
+        "Hypertrophy",
+        "Upper",
+        "Push"
+      ],
+      "goal": "Build muscle",
+      "level": "Beginner",
+      "place": "Gym",
+      "trainer": "Dana Ortiz",
+      "minutes": 40,
+      "exercises": [
+        [
+          "db-lateral",
+          4,
+          12,
+          15
+        ],
+        [
+          "rear-delt",
+          3,
+          12,
+          15
+        ],
+        [
+          "hammer",
+          3,
+          10,
+          12
+        ],
+        [
+          "pressdown",
+          3,
+          10,
+          12
+        ],
+        [
+          "cable-curl",
+          2,
+          10,
+          15
+        ]
+      ]
+    },
+    {
+      "id": "core-stability",
+      "title": {
+        "en": "Core & Stability Circuit",
+        "ckb": "خولی ناوکی جەستە و جێگیری"
+      },
+      "description": {
+        "en": "A short circuit that builds a strong, stable core. Great as a finisher after any training day.",
+        "ckb": "خولێکی کورت کە ناوکی جەستەیەکی بەهێز و جێگیر دروست دەکات. بۆ زیادکردن لە کۆتایی هەر ڕۆژێکی ڕاهێنان زۆر باشە."
+      },
+      "categories": [
+        "Core",
+        "Full Body"
+      ],
+      "goal": "Stay active",
+      "level": "Beginner",
+      "place": "Home",
+      "trainer": "Dana Ortiz",
+      "minutes": 22,
+      "exercises": [
+        [
+          "plank",
+          3,
+          30,
+          60
+        ],
+        [
+          "mtn-climber",
+          3,
+          30,
+          45
+        ],
+        [
+          "leg-raise",
+          3,
+          8,
+          12
+        ],
+        [
+          "cable-crunch",
+          3,
+          12,
+          15
+        ]
+      ]
     }
   ],
   "feed": [
-    { "id": "r-p1", "authorId": "jonas", "ago": 14, "workout": { "en": "Glutes & Hamstrings Builder", "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران" }, "duration": 56, "volume": 9800, "exercises": 5,
-      "text": { "en": "Tried the new lower-body session — hip thrusts felt great.", "ckb": "ڕاهێنانە نوێیەکەی بەشی خوارەوەم تاقیکردەوە — هیپ-سڕەست زۆر باش بوو." }, "likes": 5, "comments": [] }
+    {
+      "id": "r-p1",
+      "authorId": "jonas",
+      "ago": 14,
+      "workout": {
+        "en": "Glutes & Hamstrings Builder",
+        "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران"
+      },
+      "duration": 56,
+      "volume": 9800,
+      "exercises": 5,
+      "text": {
+        "en": "Tried the new lower-body session — hip thrusts felt great.",
+        "ckb": "ڕاهێنانە نوێیەکەی بەشی خوارەوەم تاقیکردەوە — هیپ-سڕەست زۆر باش بوو."
+      },
+      "likes": 5,
+      "comments": []
+    }
   ],
   "notifications": [
-    { "id": "r-n1", "type": "workout", "title": { "en": "2 new workouts added", "ckb": "٢ ڕاهێنانی نوێ زیادکرا" }, "body": { "en": "Glutes & Hamstrings Builder and Shoulders & Arms Finisher are in the library.", "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران و تەواوکەری شان و قۆڵ لە کتێبخانەدان." }, "href": "/workouts/glute-ham" }
+    {
+      "id": "r-n1",
+      "type": "workout",
+      "title": {
+        "en": "2 new workouts added",
+        "ckb": "٢ ڕاهێنانی نوێ زیادکرا"
+      },
+      "body": {
+        "en": "Glutes & Hamstrings Builder and Shoulders & Arms Finisher are in the library.",
+        "ckb": "بنیاتنانی ڕین و ماسولکەی پشتەوەی ران و تەواوکەری شان و قۆڵ لە کتێبخانەدان."
+      },
+      "href": "/workouts/glute-ham"
+    },
+    {
+      "id": "r-n2",
+      "type": "workout",
+      "title": {
+        "en": "New workout: Core & Stability Circuit",
+        "ckb": "ڕاهێنانی نوێ: خولی ناوکی جەستە و جێگیری"
+      },
+      "body": {
+        "en": "A 22-minute core finisher is now in the library.",
+        "ckb": "تەواوکەرێکی ٢٢ خولەکی ناوکی جەستە ئێستا لە کتێبخانەدایە."
+      },
+      "href": "/workouts/core-stability"
+    }
   ]
 }
