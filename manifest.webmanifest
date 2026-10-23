@@ -1,0 +1,25 @@
+{
+  "name": "Champion — ڕاهێنان و تەندروستی",
+  "short_name": "Champion",
+  "description": "ئۆپەراسیۆنی ڕاهێنان: کۆرس، تۆمارکردنی ڕاهێنان، پێشکەوتن و ڕاوێژکاری. ئۆفلاین کار دەکات.",
+  "lang": "ckb",
+  "dir": "rtl",
+  "start_url": "./#/today",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f3ef",
+  "theme_color": "#d2400d",
+  "categories": ["fitness", "health", "sports"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "ئەمڕۆ", "short_name": "ئەمڕۆ", "url": "./#/today", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "پێشکەوتن", "short_name": "پێشکەوتن", "url": "./#/progress", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "ڕاوێژکار", "short_name": "ڕاوێژکار", "url": "./#/coach", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
